@@ -1,0 +1,142 @@
+<!-- Customized super Header -->
+<div class="col-lg-12" style="padding: 0px">
+	<div class="sup-header" style="float: left; width: 100%; height: 68px;">
+		<div style="margin-left: 50px; width: 300px; float: left;">
+			<blockquote class="text-muted favicon-anim">
+				<h3 style="margin-top: 3px; margin-bottom: 2px;">
+					<em class="fa fa-tasks"></em>&nbsp; Templates
+				</h3>
+				<footer>Manage templates here!</footer>
+			</blockquote>
+		</div>
+		<div style="margin-right: 50px; margin-top: 20px; float: right;">
+			<button class="ui positive button" ng-click="show = 'newTemplate'"
+				ng-show="!(show = 'newTemplate')">New</button>
+			<button class="ui primary button" ng-click="$state.go('eLab')">
+				Back</button>
+
+		</div>
+	</div>
+</div>
+<div class="col-lg-12 col-md-12 col-sm-12 page-content">
+	<div class="row" ng-show="show == 'templates'"
+		ng-init="show = 'templates'">
+		<div class="col-lg-12 col-md-12 col-sm-12" style="padding-left: 60px">
+			<div class="ui cards">
+				<div class="card">
+					<div class="content">
+						<div class="header">
+							Blank <em class="subhead">Ionic</em>
+						</div>
+						<div class="description">
+
+							<div class="image">
+								<img src="img/blank-app.png" width="260px">
+							</div>
+
+
+						</div>
+					</div>
+					<div class="ui bottom teal attached button">
+						<i class="fa fa-wrench"></i> Manage Me!
+					</div>
+				</div>
+				<div class="card">
+					<div class="content">
+						<div class="header">
+							Tabed <em class="subhead">Ionic</em>
+						</div>
+						<div class="description">
+							<div class="image">
+								<img src="img/tabs-app.png" width="260px">
+							</div>
+						</div>
+					</div>
+					<div class="ui bottom teal attached button">
+						<i class="fa fa-wrench"></i> Manage Me!
+					</div>
+				</div>
+				<div class="card">
+					<div class="content">
+						<div class="header">
+							Side Menu <em class="subhead">Ionic</em>
+						</div>
+						<div class="description">
+							<div class="image">
+								<img src="img/menu-app.png" width="260px">
+							</div>
+						</div>
+					</div>
+					<div class="ui bottom teal attached button">
+						<i class="fa fa-wrench"></i> Manage Me!
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row" ng-show="show == 'newTemplate'">
+		<div class="col-lg-12 col-md-12 col-sm-12" style="padding-left: 60px">
+
+			<div class="col-lg-12 col-md-12 col-sm-12" style="height: 100%;">
+
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<a class="ui teal right ribbon label"> Featured Template</a>
+						<div class="row">
+							<div class="col-lg-6 col-md-6 col-sm-6">
+
+								<form class="ui form">
+
+									<div class="field">
+										<label>Template Title</label> <input type="text"
+											ng-model="templateInfo.templateName" name="title" placeholder="Title">
+									</div>
+									<div class="field">
+										<label>Theme</label> <input type="text"
+											ng-model="templateInfo.theme" name="theme"
+											placeholder="Theme">
+									</div>
+									<div class="field">
+										<label>Version</label> <input type="text"
+											ng-model="templateInfo.version" name="version"
+											placeholder="Ex: 1.0, 1.1 or cinderella etc...">
+									</div>
+									<div class="field">
+										<div class="two fields">
+											<div class="field">
+											<label>Thumbnail</label>
+		 										<div class="ui grey button" ngf-select ng-model = "thumbnail" name="thumbnail" accept="image/*"><i class="fa fa-upload"></i>&nbsp;Choose File (image only)</div>
+											 	<p><i>{{thumbnail[0].name}}</i></p>
+											</div>
+											<div class="field">
+											<label>Project</label>
+											   <div class="ui grey button" ngf-select   ng-model = "project" name="project" accept="application/zip"><i class="fa fa-upload"></i>&nbsp;Choose File (zip only)</div>
+												<p><i>{{project[0].name}}</i></p>
+											</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="panel-footer">
+						<div style="width:250px; margin: 0px auto;">
+
+							<button class="ui primary button" ng-click="addTemplate()">
+								<em class="fa fa-save"></em>&nbsp; Save
+							</button>
+							<button class="ui orange button" ng-click="queryWidget()">
+								<em class="icon-refresh"></em>&nbsp;Refresh
+							</button>
+							
+						</div>
+						<p><i>{{log}}</i></p>
+					</div>
+
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+</div>

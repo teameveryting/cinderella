@@ -1,0 +1,33 @@
+<div class="navbar-default sidebar" role="navigation" 
+	style=" position: fixed; margin-top: 51px;width: 70px;background:{{theme.background}};">
+    <div class="sidebar-nav navbar-collapse" id="side-bar">
+        <ul class="nav in" id="side-menu" style="padding-top:55px;">
+           
+            <li ui-sref-active="active" class="favicon-anim">
+                <a ui-sref="dashboard" ng-style="$state.current.name =='dashboard'?{color:'{{theme.background}}'}:{}">
+                	<!-- <side-menu-icon icon= "icon-speedometer" current-state = "{{$state.current.name}}" state ="dashboard" ></side-menu-icon> -->
+                	<em class="icon-speedometer"></em>
+                </a>
+            </li>
+            
+             <li ui-sref-active="active" class="favicon-anim">
+                <a ui-sref="myApps" ng-style="$state.current.name =='myApps'?{color:'{{theme.background}}'}:{}">
+                	<em class="icon-basket-loaded"></em>
+                </a>
+            </li>
+ 
+            <li ui-sref-active="active" class="favicon-anim">
+                <a ui-sref="eLab" ng-style="$state.current.name =='eLab'?{color:'{{theme.background}}'}:{}"><em class="icon-chemistry"></em></a>
+            </li>
+             <li ui-sref-active="active" class="favicon-anim">
+                <a ui-sref="tutorials" ng-style="$state.current.name =='tutorials'?{color:'{{theme.background}}'}:{}"><em class="icon-book-open"></em></a>
+            </li>
+            <li ui-sref-active="active" class="favicon-anim">
+                <a ui-sref="eAppStore" ng-style="$state.current.name =='eAppStore'?{color:'{{theme.background}}'}:{}"><em class="icon-grid"></em></a>
+            </li>
+      
+        </ul>
+    </div>
+</div> 
+
+<!-- ng-style="$state.current.name =='myApps'?{color:'{{theme.background}}'}:{}" -->

@@ -1,0 +1,88 @@
+
+<super-header icon="icon-chemistry" header="Everyting Laboratory"
+	sub-header="You can research here on everyting resources...">
+</super-header>
+
+<div class="col-lg-12 page-content">
+
+	<div class="col-lg-12 col-md-12 col-sm-12" style="height: 100%;">
+
+		<div class="panel panel-default">
+			<div class="panel-body">
+				   <a class="ui blue right ribbon label">
+				   Featured widget</a>
+				<div class="row">
+					<div class="col-lg-12 col-md-12 col-sm-12">
+
+
+						<!-- Add widget form panel -->
+						<form class="ui form">
+							<!-- <h4 class="ui dividing header">Add new widget to 'Everyting'
+								repository</h4> -->
+
+							<div class="field">
+								<div class="three fields">
+									<div class="field">
+										<label>Widget Name</label> 
+										<input type="text" ng-model="widgetInfo.W_NAME" name="widgetName" placeholder="Widget Name">
+									</div>
+									<div class="field">
+										<label>Widget Group</label> 
+										<input type="text" ng-model="widgetInfo.W_GROUP" name="widgetGroup" placeholder="Widget Group">
+									</div>
+
+									<div class="field">
+										<label>Widget Id</label> 
+										<input type="text" ng-model="widgetInfo.W_ID"  name="widgetId"  placeholder="will automatically generate..">
+									</div>
+								</div>
+							</div>
+
+							<div class="field">
+								<div class="two fields">
+									<div class="field">
+										<label>Syntax</label>
+										<textarea ng-model="widgetInfo.SYNTAX"></textarea>
+									</div>
+									<div class="field">
+										<label>Thumbnail</label>
+										<textarea ng-model="widgetInfo.THUMBNAIL"></textarea>
+									</div>
+								</div>
+							</div>
+
+							<div class="field">
+								<div class="two fields">
+									<div class="field">
+
+										<div class="ui right labeled left icon input">
+											<i class="tags icon"></i> 
+											<input type="text" placeholder="Enter tags"> 
+											<a class="ui tag teal label">Add Tag</a>
+										</div>
+
+									</div>
+									<div class="field">
+										<div class="field">
+											<input placeholder="Your tags..." readonly="" type="text">
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="panel-footer">
+				<div style="width:350px; margin: 0px auto;">
+					
+					<button class="ui green button" ng-click = "saveWidget()"><em class="fa fa-save"></em>&nbsp; Save</button>
+					<button class="ui orange button" ng-click="queryWidget()"><em class="icon-refresh"></em>&nbsp;Refresh</button>
+					<button class="ui blue button"><em class="icon-action-undo"></em>&nbsp;Back</button>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+</div>

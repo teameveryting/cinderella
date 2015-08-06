@@ -1,0 +1,77 @@
+[
+    {
+        "id": "1001",
+        "parent": "#",
+        "icon": "icon-folder",
+        "text": "App Name",
+        "state": {
+            "opened": true
+        }
+    },
+    {
+        "id": "1002",
+        "parent": "1001",
+        "icon": "icon-folder",
+        "text": "css",
+        "state": {
+            "opened": false
+        }
+    },
+    {
+        "id": "1003",
+        "parent": "1002",
+        "icon": "icon-folder",
+        "text": "bootstrap",
+        "state": {
+            "opened": false
+        }
+    },
+    {
+        "id": "2003",
+        "parent": "1003",
+        "icon": "icon-doc",
+        "text": "bootstrap.min.css",
+        "state": {
+            "opened": false
+        },
+        "content":"@import \"compass/css3\";\n$variable: #333;\n$blue: #3bbfce;\n$margin: 16px;\n.content-navigation {\n#nested { \nbackground-color: black;\n} \nborder-color: $blue; \n color:darken($blue, 9%);\n}"
+    },
+    {
+        "id": "1004",
+        "parent": "1001",
+        "icon": "icon-folder",
+        "text": "js",
+        "state": {
+            "opened": false
+        }
+    },
+        {
+        "id": "1008",
+        "parent": "1004",
+        "icon": "icon-doc",
+        "text": "app.js",
+        "state": {
+            "opened": false
+        },
+        "content":"function findSequence(goal) {\nfunction find(start, history) {\nif (start == goal) \n return history;\nelse if (start > goal)\n return null;\nelse\n return find(start + 5, \"(\" + history + \" + 5)\") ||\nfind(start * 3, \"(\" + history + \" * 3)\");\n}\nreturn find(1, \"1\");\n}"
+    },
+    {
+        "id": "1005",
+        "parent": "1001",
+        "icon": "icon-doc",
+        "text": "index.html",
+        "state": {
+            "opened": false
+        },
+        "content": "<html>\n<body>\n<h1>A test drive</h1>\n</body>\n</html>"
+    },
+    {
+        "id": "1006",
+        "parent": "1002",
+        "icon": "icon-doc",
+        "text": "style.css",
+        "state": {
+            "opened": false
+        }
+    }    
+]

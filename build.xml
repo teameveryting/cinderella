@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<project default="deploy" basedir=".">
+	<target name="compile">
+		<javac srcdir="src" destdir="" includeantruntime="false">
+		</javac>
+		<echo message="Compling project here"></echo>
+	</target>
+	<target name="deploy" depends="compile">
+		<echo message="Hello success ant build" />
+	</target>
+</project>
