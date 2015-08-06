@@ -26,12 +26,11 @@ public class ZipReader {
 			ETFolderModel item = projectStructure.get(i);
 			String fileContent =  "";
 			if(item.getFileContent() != null){
-				StringWriter fileWritter = item.getFileContent();
+				InputStream fileWritter = item.getFileContent();
 				try{
 					fileContent = fileWritter.toString();
 				}finally{
 					if(fileWritter != null){
-						fileWritter.flush();
 						fileWritter.close();
 					}
 				}
@@ -111,7 +110,7 @@ public class ZipReader {
 					if(!isFolder){
 						StringWriter fileWriter = new StringWriter();
 						IOUtils.copy(zipInputStream, fileWriter, "UTF-8");
-						me.setFileContent(fileWriter);
+					//	me.setFileContent(fileWriter);
 					}
 					directory.add(me);
 				}
