@@ -34,4 +34,9 @@ public class ETModel implements Serializable{
 	public int getSize() {
 		return model.size();
 	}
+	
+	@Override
+	public String toString() {
+		return model.toString();
+	}
 }

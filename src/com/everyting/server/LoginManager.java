@@ -3,7 +3,6 @@ package com.everyting.server;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.validator.routines.EmailValidator;
 
@@ -16,7 +15,6 @@ import com.everyting.server.vendor.VendorManager;
 
 public class LoginManager {
 	
-	@SuppressWarnings("deprecation")
 	public static ETModel login(HttpServletRequest request, ETModel userInfo){
 			ETModel loginResponse = new ETModel();
 			String email = (String) userInfo.get("email");
@@ -30,7 +28,7 @@ public class LoginManager {
 			}
 			ServiceExecutor serviceExecutor = new ServiceExecutor();
 			SQLConstructor sqlConstructor = VendorManager.getSQLConstructor();
-			List<ETModel> queryResults= serviceExecutor.executeQuery(sqlConstructor.getUserLoginSQL(), new Object[]{email});
+			List<ETModel> queryResults= serviceExecutor.rawExecuteQuery(sqlConstructor.getUserLoginSQL(), new Object[]{email});
 			if(queryResults != null && queryResults.size() >0){
 				ETModel dbUserInfo = (ETModel) queryResults.get(0);
 				String dbHashedPassword = dbUserInfo.get("encryptPassword").toString();

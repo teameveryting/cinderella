@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,7 +21,6 @@ import com.everyting.server.model.ETModel;
 public class DataHandler {
 	
 	public static ETModel getRequestData(HttpServletRequest request){
-		
 		try {
 			JSONObject jsonObject = new JSONObject(DataHandler.getPostedData(request));
 			return DataHandler.toETModel(jsonObject);
@@ -91,8 +92,8 @@ public class DataHandler {
 		}
 		return etModel;
 	}
-	public static Object[] toETModel(JSONArray jsonArray){
-		Object[] objectArray = new Object[jsonArray.length()];
+	public static List<Object> toETModel(JSONArray jsonArray){
+		List<Object> objectList = new ArrayList<>();
 		Object arrayItem = null;
 		try{
 			for(int i=0; i <jsonArray.length(); i++){
@@ -102,13 +103,13 @@ public class DataHandler {
 				}else if(arrayItem instanceof JSONArray){
 					arrayItem = toETModel((JSONArray)arrayItem);
 				}
-				objectArray[i] = arrayItem;
+				objectList.add(arrayItem);
 			}
 		} catch (JSONException e) {
 			throw new ETException("ET-JSON-005", "DataHandler throws JSONException while toETModel" 
 					, e.getMessage());
 		}
-		return objectArray;
+		return objectList;
 	}
 	@SuppressWarnings("unchecked")
 	public static JSONObject toJSONObject(ETModel etModel){
@@ -195,6 +196,18 @@ public class DataHandler {
 		}
 		return caseBuilder.toString();
 	}	
+	
+	public static String replaceAllByProperNames(String rawString){
+		Pattern pattern = Pattern.compile("#([a-zA-Z\\d]+)#");
+		Matcher matcher = pattern.matcher(rawString);
+		while(matcher.find()){
+			String rawColumnName = matcher.group().substring(1, matcher.group().length()-1);
+			String tableCoumnName = DataHandler.toUpperSplitCase(rawColumnName);
+			rawString = rawString.replaceAll("#"+rawColumnName+"#", tableCoumnName);
+		};
+		return rawString;
+	}
+	
 	public  static String hashPassword(String password){
 		return BCrypt.hashpw(password, BCrypt.gensalt(12));
 	}
@@ -228,7 +241,7 @@ public class DataHandler {
 		toJSonArray.add(etModel4);
 		
 		JSONObject jsonObject = toJSONResponse(toJSonArray);
-		System.out.println(jsonObject.toString());
+		//System.out.println(jsonObject.toString());
 		
 		String rawInsertSQL = "{"
 				+ " \"dataSource\": \"etTemplateStructure\", "
@@ -242,9 +255,11 @@ public class DataHandler {
 				+ "}";
 		JSONObject jsonObject2 = new JSONObject(rawInsertSQL);
 		ETModel etModel = DataHandler.toETModel(jsonObject2);
-		Object[] objectArray = (Object[]) etModel.get("valueMap");
-		Object[] objectArray2 = (Object[])objectArray[1];
-	    Object[] objectArray3 = (Object[])objectArray2[1];
-		System.out.println(((ETModel)objectArray3[0]).get("type2"));
+		List objectArray = (List) etModel.get("valueMap");
+		List  objectArray2 = (List)objectArray.get(1);
+		List objectArray3 = (List)objectArray2.get(1);
+		ETModel model2 = (ETModel)objectArray3.get(0);
+		String type2 = (String) model2.get("type2"); 
+		System.out.println(etModel.toString());
 	}
 }

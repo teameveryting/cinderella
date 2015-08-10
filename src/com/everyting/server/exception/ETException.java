@@ -13,9 +13,9 @@ public class ETException extends RuntimeException implements Serializable{
 	public ETException(String message){
 		super(message);
 	}
-	public ETException(String errorCode, String message){
+	public ETException(String title, String message){
 		this(message);
-		this.errorCode = errorCode;
+		this.title = title;
 	}
 	public ETException(String errorCode, String title, String message){
 		this(message);

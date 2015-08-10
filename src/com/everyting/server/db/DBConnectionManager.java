@@ -31,8 +31,7 @@ public class DBConnectionManager {
 			dbInfo.set("driverClassName", dbProperties.get("driverClassName").toString());
 			dbInfo.set("url", dbProperties.get("url").toString());
 		} catch (Exception e) {
-			throw new ETException("ET-DB-000","db.properties file is mising inside /WEB-INF/classes " + e.getMessage(),
-								  "Server is down for this moment please contact System Administrator");
+			throw new ETException("Exception", "Server is down for this moment please contact System Administrator", e.getMessage());
 		}
 	}
 	
@@ -52,10 +51,12 @@ public class DBConnectionManager {
 			try {
 				connection = connectionPool.getConnection();
 			} catch (SQLException e) {
-				throw new ETException("Database is down at this moment..." +e.getMessage());
+				throw new ETException("SQLException", 
+									  "Database is down, may due to invalid credentials in db.properties file", 
+									  "Database is down at this moment:" +e.getMessage());
 			}
 		}else{
-			throw new ETException("Unable to load the db properties");
+			throw new ETException("InvalidDBPros","Unable to load the db properties", "Unable to load the db properties");
 		}
 		return connection;
 	}
@@ -65,8 +66,8 @@ public class DBConnectionManager {
 			try {
 				connection.close();
 			} catch (SQLException e) {
-				throw new ETException("ET-DB-001","Error in closing connection",
-						  "Error in closing connection please contact System Administrator");
+				throw new ETException("SQLException","Error in closing connection",
+						  "Error in closing connection please contact System Administrator:" + e.getMessage());
 			}
 		}
 	}
@@ -106,8 +107,8 @@ public class DBConnectionManager {
 		        	connection.close();
 		        }
 		} catch (SQLException e) {
-			throw new ETException("ET-DB-002","Error in closing resources",
-					  "Error in closing connection please contact System Administrator");
+			throw new ETException("SQLException","Error in closing resources",
+					  "Error in closing connection please contact System Administrator:" + e.getMessage());
 		}
 	}
 	
