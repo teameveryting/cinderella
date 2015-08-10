@@ -1,0 +1,140 @@
+APICalls:
+Note 1: Each call has two types of methods (Raw, normal) intended for data from Interpreter.java, UI respectively
+Note 2: In case of the raw methods in Interpreter.java the developers has to sure that the code can work for all types of DBs
+	Ex: MyInterpreter.java
+		String dbVendor = vendorManager.getDBVendor();
+		String myQuerySQl = "";
+		if("mysql".equalsIgnoreCase(vendor)){
+		   myQuerySQl = "SELECT * FROM MYTABLE1 LIMIT 50 OFFSET 0";
+		}
+		else if("oracle".equalsIgnoreCase(vendor)){
+			myQuerySQl = "SELECT * FROM MYTABLE1 WHERE ROWNUM <= 20 OFFSET 0";
+		}
+		List<ETModel> queryResultList = serviceExecutor.rawExecuteQuery(String sql, Object[] params);
+		
+1.Query:
+----------
+1. List<ETModel> queryResultList = serviceExecutor.rawExecuteQuery(String sql, Object[] params); (Intended for Interpreter)
+2. List<ETModel> queryResultList = serviceExecutor.executeQuery(ETModel requestData);(Intended for UI, can also used for Interpreter)
+/*ETModel requestData
+  requestData.set("select", ""); //Optional, default "SELECT *"
+  requestData.set("dataSource",""); //Not required only in the case of custom select (like above line)
+  requestData.set("from", "");//Optional, default "FROM Table_Name"	
+  requestData.set("where", "");//Optional
+  requestData.set("whereParams", List<Object> params);//Required in the case of custom where
+  requestData.set("orderBy", "");//Optional
+  requestData.set("groupBy", "");//Optional
+  requestData.set("having", "");//Optional
+  requestData.set("limit", "");//Optional Default 20
+  requestData.set("offset", "");//Optional Default 0
+*/
+2.ExecuteUpdate
+-------------------------------
+1. ETModel resultData = serviceExecutor.rawExecuteUpdate(String sql, Object[] params); (Intended for Interpreter)
+2. ETModel resultData = serviceExecutor.executeUpdate(String action, ETModel requestData);(Intended for UI, can also used for Interpreter)
+   /*
+	action = insert/update/delete
+	ETModel requestData
+	ETModel valueMap = new ETModel();
+		valueMap.set("column1", "value1");
+		valueMap.set("column2", "value2");
+		valueMap.set("column3", "value3"); --- etc..
+	requestData.set("valueMap", valueMap); //In the case of insert
+	ETModel setMap = new ETModel();
+		setMap.set("column1", "value1");
+		setMap.set("column2", "value2");
+		setMap.set("column3", "value3"); --- etc..
+	requestData.set("setMap", setMap);//In the case of update	
+	requestData.set("where", ""); //In case of update/delete, otherwise Default where constructed by primarykey of ds
+	requestData.set("whereParams", List<Object> params); //In case of update/delete
+	
+	ETModel resultData
+	resultData.get("affectedRows"); //Returns no.of affected rows
+	//In case of insert action resultData contains inserted row info like resultData.get("insertedColumn1");
+   */
+3.BatchExecuteUpdate
+-----------------------------
+1.  ETModel resultData = serviceExecutor.rawBatchExecuteUpdate(String sql, List<Object[]> orderedParamsList); (Intended for Interpreter)
+2.  ETModel resultData = serviceExecutor.batchExecuteUpdate(String action, ETModel requestData);(Intended for UI,....)
+   /*
+	action = batchInsert/batchUpdate/batchDelete
+	ETModel requestData
+	requestData.set("dataSource", "");
+	
+	ETModel valueMap1 = new ETModel();
+		valueMap1.set("column1", "value1");
+		valueMap1.set("column2", "value2");
+		valueMap1.set("column3", "value3"); --- etc..
+	ETModel valueMap2 = new ETModel();
+		valueMap2.set("column1", "value1");
+		valueMap2.set("column2", "value2");
+		valueMap2.set("column3", "value3"); --- etc..
+	ETModel valueMap3 = new ETModel();
+		valueMap3.set("column1", "value1");
+		valueMap3.set("column2", "value2");
+		valueMap3.set("column3", "value3"); --- etc..
+
+		List<ETModel> valueMapList;
+		valueMapList.add(valueMap1);
+		valueMapList.add(valueMap2);
+		valueMapList.add(valueMap3);
+
+	requestData.set("valueMapList", valueMapList); //In the case of insert
+	
+	ETModel setMap1 = new ETModel();
+		setMap1.set("column1", "value1");
+		setMap1.set("column2", "value2");
+		setMap1.set("column3", "value3"); --- etc..
+	ETModel setMap2 = new ETModel();
+		setMap2.set("column1", "value1");
+		setMap2.set("column2", "value2");
+		setMap2.set("column3", "value3"); --- etc..
+	ETModel setMap2 = new ETModel();
+		setMap2.set("column1", "value1");
+		setMap2.set("column2", "value2");
+		setMap2.set("column3", "value3"); --- etc..
+		
+	List<ETModel> setMapList;
+		setMapList.add(setMapList1);
+		setMapList.add(setMapList2);
+		setMapList.add(setMapList3);
+
+	requestData.set("setMapList", setMapList);//In the case of update	
+	requestData.set("where", "column1 = ? AND column2 = ?"); 
+	//In case of update/delete, otherwise Default where constructed by primary key
+	
+	List<Object> batch1WhereParams;
+		batch1WhereParams.add("column1String");
+		batch1WhereParams.add(column2Int);
+	List<Object> batch2WhereParams;
+		batch2WhereParams.add("column1String");
+		batch2WhereParams.add(column2Int);
+	List<Object> batch2WhereParams;
+		batch3WhereParams.add("column1String");
+		batch3WhereParams.add(column2Int);
+	
+	List<List<Object>> whereParamsList;
+	whereParamsList.add(batch1WhereParams);
+	whereParamsList.add(batch2WhereParams);
+	whereParamsList.add(batch2WhereParams);
+	
+	//In case of update/delete, otherwise Default where constructed by primarykey of ds
+	requestData.set("where", "cloumn1 = ? AND column2 > ? OR column <= ?");
+	 
+   //In case of update/delete should match the setMapList size(for update only)
+	requestData.set("whereParamsList", whereParamsList); 
+	
+	ETModel resultData
+	resultData.get("affectedRows"); //Returns no.of affected rows
+	//In case of insert action returns Object[ETModels] each model represents inserted row
+   */
+
+4.bulkExecuteUpdate (NOt yet started)
+----------------------
+
+
+
+
+
+
+
