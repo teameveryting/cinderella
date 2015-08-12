@@ -9,14 +9,14 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Everyting</title>
 
-<link rel="stylesheet" href="lib/css/font-awesome.min.css" type="text/css">
-<link rel="stylesheet" href="lib/css/semantic.min.css">
-<link rel="stylesheet" href="css/login.css">
+ <link rel="stylesheet" href="vendor/font-awesome/font-awesome.min.css" type="text/css">
+<link rel="stylesheet" href="vendor/semantic/semantic.min.css">
+<link rel="stylesheet" href="app/css/login.css">
 
-<script src="lib/js/jquery.min.js"></script>
-<script src="lib/js/angular.min.js"></script>
-<script src="lib/js/semantic.min.js"></script>
-<script src="js/controllers/login.js"></script>
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/angular-js/angular.min.js"></script>
+<script src="vendor/semantic/semantic.min.js"></script>
+<script src="app/js/controllers/login.js"></script>
 </head>
 <body ng-controller="loginCtrl">
 	<div id="outPopUp">
