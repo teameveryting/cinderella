@@ -17,7 +17,7 @@ INSERT INTO `everything_db`.`et_data_sources`
              `last_update_date`) 
 VALUES      ( 'ETApps', 
               'ET_APPS', 
-              NULL, 
+              'APP_ID', 
               NULL, 
               'EVERYTING_DB', 
               NULL, 
@@ -50,7 +50,7 @@ INSERT INTO `everything_db`.`et_data_sources`
              `last_update_date`) 
 VALUES      ( 'ETAppStructure', 
               'ET_APP_STRUCTURE', 
-              NULL, 
+              'ID', 
               NULL, 
               'EVERYTING_DB', 
               NULL, 
@@ -83,7 +83,7 @@ INSERT INTO `everything_db`.`et_data_sources`
              `last_update_date`) 
 VALUES      ( 'ETDatasources', 
               'ET_DATA_SOURCES', 
-              NULL, 
+              'ID', 
               NULL, 
               'EVERYTING_DB', 
               NULL, 
@@ -116,7 +116,7 @@ INSERT INTO `everything_db`.`et_data_sources`
              `last_update_date`) 
 VALUES      ( 'ETFiles', 
               'ET_FILES', 
-              NULL, 
+              'FILE_ID', 
               NULL, 
               'EVERYTING_DB', 
               NULL, 
@@ -149,7 +149,7 @@ INSERT INTO `everything_db`.`et_data_sources`
              `last_update_date`) 
 VALUES      ( 'ETInterpreters', 
               'ET_INTERPRETERS', 
-              NULL, 
+              'ID', 
               NULL, 
               'EVERYTING_DB', 
               NULL, 
@@ -182,7 +182,7 @@ INSERT INTO `everything_db`.`et_data_sources`
              `last_update_date`) 
 VALUES      ( 'ETTemplateStructure', 
               'ET_TEMPLATE_STRUCTURE', 
-              NULL, 
+              'ID', 
               NULL, 
               'EVERYTING_DB', 
               NULL, 
@@ -215,7 +215,7 @@ INSERT INTO `everything_db`.`et_data_sources`
              `last_update_date`) 
 VALUES      ( 'ETTemplates', 
               'ET_TEMPLATES', 
-              NULL, 
+              'TEMPLATE_ID', 
               NULL, 
               'EVERYTING_DB', 
               NULL, 
@@ -248,7 +248,7 @@ INSERT INTO `everything_db`.`et_data_sources`
              `last_update_date`) 
 VALUES      ( 'ETUsers', 
               'ET_USERS', 
-              NULL, 
+              'USER_ID', 
               NULL, 
               'EVERYTING_DB', 
               NULL, 
@@ -281,7 +281,7 @@ INSERT INTO `everything_db`.`et_data_sources`
              `last_update_date`) 
 VALUES      ( 'ETWidgets', 
               'ET_WIDGETS', 
-              NULL, 
+              'ID', 
               NULL, 
               'EVERYTING_DB', 
               NULL, 
