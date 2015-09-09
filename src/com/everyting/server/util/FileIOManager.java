@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,6 +18,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
@@ -25,6 +27,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.everyting.server.exception.ETException;
 import com.everyting.server.model.ETFolderModel;
 import com.everyting.server.model.ETModel;
 public class FileIOManager {
@@ -33,9 +36,31 @@ public class FileIOManager {
     private static final int MEMORY_THRESHOLD   = 1024 * 1024 * 5;  // 5MB
     private static final int MAX_FILE_SIZE      = 1024 * 1024 * 120; // 120MB
     private static final int MAX_REQUEST_SIZE   = 1024 * 1024 * 150; // 150MB
-    
+
+    public static void writeFileStreamToResponse(ETModel blobData, HttpServletResponse response, boolean isInline){
+	try {	
+			if(blobData != null){
+				String fileName = (String) blobData.get("fileName");
+				String contentType = (String) blobData.get("contentType");
+				contentType = (contentType == null || !(contentType.length() >0 )) ? "application/octet-stream": contentType;
+				String content = (String) blobData.get("content");
+				byte[] fileStream = content.getBytes();
+				response.setContentType(contentType);
+				String downloadType = "attachment";
+				if(isInline) downloadType = "inline";
+				response.setHeader("Content-Disposition", downloadType + "; filename=\"" + fileName + "\"");
+		         OutputStream outputStream = response.getOutputStream();
+		         outputStream.write(fileStream);
+		         outputStream.flush();
+		         outputStream.close();
+		         return;
+			}
+		} catch (IOException e) {
+			throw new ETException("IOException", "FileIOManager throws IOException while writeFileStreamToResponse", e.getMessage());
+		}
+    }
     /*Response:List (fileName, fileStream)*/
-    public static List<ETModel> getUploadedFiles(HttpServletRequest request){
+    public static List<ETModel> readUploadedFiles(HttpServletRequest request){
     	List<ETModel> fileStreamList = new ArrayList<>();
     	try {
         	DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -55,13 +80,12 @@ public class FileIOManager {
 	    	   }
  			}
     	}catch (FileUploadException e) {
-			 throw new RuntimeException("FileIOManager throws FileUploadException2:" + e.getCause());
+				throw new ETException("FileUploadException", "FileIOManager throws FileUploadException while readUploadedFiles", e.getMessage());
 		} catch (IOException e) {
-			throw new RuntimeException("FileIOManager throws IOException:" + e.getMessage());
+			throw new ETException("IOException", "FileIOManager throws IOException while readUploadedFiles", e.getMessage());
 		} 
     	return fileStreamList;
     }
-	
    /*Request Data: data:stringifiedJsonForm, fileMapping:stringifiedJson, file:Array of Files*/
 	public static ETModel getUploadedFileFormData(HttpServletRequest request){
 		ETModel etModel = new ETModel();

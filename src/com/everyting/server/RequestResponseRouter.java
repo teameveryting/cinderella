@@ -1,7 +1,6 @@
 package com.everyting.server;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -18,7 +17,13 @@ public class RequestResponseRouter extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String requestURI = request.getRequestURI();
-		if(requestURI.toLowerCase().contains("/login")){
+		if(requestURI.toLowerCase().contains("service/files/download")){
+				ServiceManager.downloadETFileStream(request, response);
+				return;
+		}else if(requestURI.toLowerCase().contains("service/blob/download")){
+			ServiceManager.downloadBlobStream(request, response);
+			return;
+		}else if(requestURI.toLowerCase().contains("/login")){
 			RequestDispatcher requestDispatcher = request.getRequestDispatcher("/WEB-INF/login.jsp");
 			requestDispatcher.forward(request, response);
 		}else{
@@ -27,38 +32,36 @@ public class RequestResponseRouter extends HttpServlet {
 		}
 	}
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		PrintWriter printWriter = response.getWriter();
+		ResponseWirter responseWirter = ResponseWirter.getInstance(response);
 		String requestURI = request.getRequestURI();
 		ETModel responseData = new ETModel();
 		try{
 			if (requestURI.contains("/api/")) {
-				APIManager apiManager = new APIManager();
 				String opeartion = getAPIOperation(requestURI);
 				if (opeartion != null && opeartion.length() > 0) {
 					if(opeartion.equalsIgnoreCase("query")){
 						ETModel requestData = DataHandler.getRequestData(request);
-					    responseData = apiManager.manageQuery(requestData);
+					    responseData = APIManager.manageQuery(requestData);
 					}
 					else if(opeartion.equalsIgnoreCase("insert") ||
 							opeartion.equalsIgnoreCase("update") ||
 							opeartion.equalsIgnoreCase("delete")){
 						ETModel requestData = DataHandler.getRequestData(request);
-						responseData = apiManager.manageExecuteUpdate(opeartion,requestData);
+						responseData = APIManager.manageExecuteUpdate(opeartion,requestData);
 					}
 					else if(opeartion.equalsIgnoreCase("batchInsert") ||
 							opeartion.equalsIgnoreCase("batchUpdate") ||
 							opeartion.equalsIgnoreCase("batchDelete")){
 						ETModel requestData = DataHandler.getRequestData(request);
-						responseData = apiManager.manageBatchExecuteUpdate(opeartion,requestData);
+						responseData = APIManager.manageBatchExecuteUpdate(opeartion,requestData);
 					}
-					else if(opeartion.equalsIgnoreCase("uploadFiles")){
-						
-					}
-					else if(opeartion.equalsIgnoreCase("uploadFileForm")){
-						
-					}
-					else if(opeartion.equalsIgnoreCase("downloadFile")){
-						
+					else if(opeartion.contains("files/")){
+						String fileOpration = opeartion.substring(6);
+						if(fileOpration.contains("upload/")){
+							
+						}if(fileOpration.equalsIgnoreCase("formFileUpload")){
+							
+						}
 					}
 					else if(opeartion.equalsIgnoreCase("processOnServer")){
 						
@@ -67,25 +70,25 @@ public class RequestResponseRouter extends HttpServlet {
 			}
 			if(requestURI.contains("/login")){
 				ETModel requestDataModel = DataHandler.getRequestData(request);
-					ETModel	responseDataModel = LoginManager.login(request, requestDataModel);
-					printWriter.write(DataHandler.toJSONResponse(responseDataModel).toString());
-					return;
+					responseData = ServiceManager.login(request, requestDataModel);
 			}
-			
 			if(requestURI.contains("/logout")){
-					ETModel	responseDataModel = LoginManager.logout(request);
-					printWriter.write(DataHandler.toJSONResponse(responseDataModel).toString());
-					return;
+					responseData = ServiceManager.logout(request);
 			}
-			printWriter.write(DataHandler.toJSONResponse(responseData).toString());
-			return;
+					responseWirter.write(responseData);
+					return;
 		}catch(ETException ex){
-				printWriter.write(DataHandler.toJSONResponse(ex.getTitle(), ex.getMessage()).toString());
+			responseWirter.writeError(ex.getErrorType(), ex.getLogInfo(), ex.getMessage());
+			return;
 		}catch(RuntimeException ex){
-			printWriter.write(DataHandler.toJSONResponse("", ex.getMessage()).toString());
+			responseWirter.writeError("Exception", "RequestResponseRouter throws RuntimeException while Post",  ex.getMessage());
+			return;
+		}catch(Exception ex){
+			responseWirter.writeError("Exception", "RequestResponseRouter throws Exception while Post",  ex.getMessage());
+			return;
+			
 		}finally{
-			printWriter.flush();
-			printWriter.close();
+			responseWirter.closeResources();
 		}	
 	}
 	private String getAPIOperation(String uri) {

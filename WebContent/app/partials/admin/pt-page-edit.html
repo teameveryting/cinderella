@@ -1,0 +1,97 @@
+<!-- <super-header icon="icon-notebook" header="Platform Pages" sub-header="Manage platform pages">
+</super-header> -->
+
+<div class="col-lg-12" style="padding: 0px;  margin-bottom: 20px;">
+	<div class="sup-header" style="float: left; width: 100%; height: 68px;">
+		<div style="margin-left: 50px;  float: left;">
+			<blockquote class="text-muted favicon-anim">
+				<h3 style="margin-top: 3px; margin-bottom: 2px;">
+					<em class="icon-notebook"></em> Platform Pages
+				</h3>
+				<footer>Manage platform pages</footer>
+			</blockquote>
+		</div>
+		<div class="pull-right" style="margin-top: 20px; margin-right: 50px">
+			<button ng-disabled="form.$invalid" class="btn btn-primary"
+				ng-click="save()">&nbsp;Save&nbsp;</button>
+		</div>
+	</div>
+</div>
+
+<!-- CodeMirror with bootstrap tab integration -->
+<div class="row" style="padding-left: 55px; padding-right: 20px;">
+	<div class="col-lg-12 code-mirror-page-content"
+		style="margin-top: -12px">
+		<tabset justified="true"> <tab heading="Details">
+		<div class="row" style="padding: 20px">
+			<form role="form" name="form">
+				<div class="row">
+					<div class="form-group col-lg-6 col-md-6 col-sm-6 has-error">
+						<label>Page Name</label> <input class="form-control " type="text"
+							name="page_name" placeholder="Unique Page Name"
+							ng-model="pageDetails.pageName" required>
+						<p ng-show="form.page_name.$dirty && form.page_name.$invalid"
+							class="help-block">Page Name is required!</p>
+					</div>
+					<div class="form-group col-lg-6 col-md-6 col-sm-6">
+						<label>Icon</label> <input class="form-control" type="text"
+							placeholder="icon-notebook/fa fa-user"
+							ng-model="pageDetails.icon">
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-lg-6 col-md-6 col-sm-6 has-error">
+						<label>State</label> <input class="form-control " type="text"
+							name="page_state" placeholder="app.home.page"
+							ng-model="pageDetails.state" required>
+						<p ng-show="form.page_state.$dirty &&  form.page_state.$invalid"
+							class="help-block">Page State is required!</p>
+					</div>
+					<div class="form-group col-lg-6 col-md-6 col-sm-6 has-error">
+						<label>URL</label> <input class="form-control " type="text"
+							name="page_url" placeholder="/page" ng-model="pageDetails.url"
+							required>
+						<p ng-show="form.page_url.$dirty &&  form.page_url.$invalid"
+							style="padding: 3px;">Page URL required!</p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-lg-6 col-md-6 col-sm-6 has-error">
+						<label>Controller</label> <input class="form-control " type="text"
+							name="page_controller" placeholder="MyCntrl"
+							ng-model="pageDetails.controller" required>
+						<p
+							ng-show="form.page_controller.$dirty &&  form.page_controller.$invalid"
+							class="help-block">Controller is required!</p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-lg-6 col-md-6 col-sm-6">
+						<label class="checkbox" style="cursor: pointer;"> <input
+							type="checkbox" ng-true-value="'Y'" ng-false-value="'N'"
+							ng-model="pageDetails.showInMenu"> Show In Menu
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="form-group col-lg-6 col-md-6 col-sm-6">
+						<!-- <button ng-disabled="form.$invalid" class="btn btn-default"
+							ng-click="save()">&nbsp;Save&nbsp;</button> -->
+					</div>
+				</div>
+			</form>
+		</div>
+		</tab> <tab heading="Html" ng-click="selectTab()">
+		<div ng-model="pageDetails.html" ui-codemirror ui-refresh='refresh'
+			ui-codemirror-opts="editorOptions('xml')" style="margin: -20px"></div>
+		</tab> <tab heading="JS" ng-click="selectTab()">
+		<div ng-model="pageDetails.js" ui-codemirror ui-refresh='refresh'
+			ui-codemirror-opts="editorOptions('javascript')"
+			style="margin: -20px"></div>
+		</tab> <tab heading="Lazy Load">
+		<div ng-model="pageDetails.lazyLoad" ui-codemirror
+			ui-refresh='refresh' ui-codemirror-opts="editorOptions('javascript')"
+			style="margin: -20px"></div>
+		</tab> </tabset>
+	</div>
+</div>

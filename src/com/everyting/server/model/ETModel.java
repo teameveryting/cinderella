@@ -17,6 +17,12 @@ public class ETModel implements Serializable{
 		return model.put(key, value);
 	}
 	
+	public void remove(String key){
+		if(model.containsKey(key)){
+			model.remove(key);
+		}
+	}
+	
 	public Set<String> getKeySet(){
 		return model.keySet();
 	}

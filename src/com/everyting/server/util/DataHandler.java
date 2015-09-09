@@ -25,7 +25,7 @@ public class DataHandler {
 			JSONObject jsonObject = new JSONObject(DataHandler.getPostedData(request));
 			return DataHandler.toETModel(jsonObject);
 		} catch (JSONException e) {
-			throw new ETException("ET-JSON-000", "DataHandler throws JSONException while getRequestData" 
+			throw new ETException("JSONException", "DataHandler throws JSONException while getRequestData" 
 					, e.getMessage());
 		}
 	}
@@ -35,7 +35,7 @@ public class DataHandler {
 			response.put("status", "success");
 			response.put("data", DataHandler.toJSONObject(responseModel));
 		} catch (JSONException e) {
-			throw new ETException("ET-JSON-001", "DataHandler throws JSONException while toJSONResponse" 
+			throw new ETException("JSONException", "DataHandler throws JSONException while toJSONResponse" 
 					, e.getMessage());
 		}
 		return response;
@@ -51,21 +51,21 @@ public class DataHandler {
 			response.put("status", "success");
 			response.put("data", jsonArray);
 		} catch (JSONException e) {
-			throw new ETException("ET-JSON-002", "DataHandler throws JSONException while toJSONResponse" 
+			throw new ETException("JSONException", "DataHandler throws JSONException while toJSONResponse" 
 					, e.getMessage());
 		}
 		return response;
 	}
-	public static JSONObject toJSONResponse(String errorTitle, String errorMsg){
+	public static JSONObject toJSONResponse(String errorCode, String title, String message){
 		JSONObject response = new JSONObject();
 		JSONObject data = new JSONObject();
 		try {
 			response.put("status", "error");
-			data.put("errorTitle", errorTitle);
-			data.put("details", errorMsg);
+			data.put("type", errorCode);
+			data.put("message", message);
 			response.put("data", data);
 		} catch (JSONException e) {
-			throw new ETException("ET-JSON-003", "DataHandler throws JSONException while getResponseException" 
+			throw new ETException("JSONException", "DataHandler throws JSONException while getResponseException" 
 					, e.getMessage());
 		}
 		return response;
@@ -87,7 +87,7 @@ public class DataHandler {
 				etModel.set(key, value);
 			}
 		} catch (JSONException e) {
-			throw new ETException("ET-JSON-004", "DataHandler throws JSONException while toETModel" 
+			throw new ETException("JSONException", "DataHandler throws JSONException while toETModel" 
 					, e.getMessage());
 		}
 		return etModel;
@@ -106,7 +106,7 @@ public class DataHandler {
 				objectList.add(arrayItem);
 			}
 		} catch (JSONException e) {
-			throw new ETException("ET-JSON-005", "DataHandler throws JSONException while toETModel" 
+			throw new ETException("JSONException", "DataHandler throws JSONException while toETModel" 
 					, e.getMessage());
 		}
 		return objectList;
@@ -140,6 +140,9 @@ public class DataHandler {
 					 }
 					 value = jsonArray;
 				}
+				if(value instanceof byte[]){
+					value = new String((byte[]) value);
+		    	  }
 				jsonObject.put(key, value);
 			}
 		} catch (JSONException e) {
@@ -240,7 +243,7 @@ public class DataHandler {
 		toJSonArray.add(etModel1);
 		toJSonArray.add(etModel4);
 		
-		JSONObject jsonObject = toJSONResponse(toJSonArray);
+		//JSONObject jsonObject = toJSONResponse(toJSonArray);
 		//System.out.println(jsonObject.toString());
 		
 		String rawInsertSQL = "{"
@@ -255,11 +258,11 @@ public class DataHandler {
 				+ "}";
 		JSONObject jsonObject2 = new JSONObject(rawInsertSQL);
 		ETModel etModel = DataHandler.toETModel(jsonObject2);
-		List objectArray = (List) etModel.get("valueMap");
+		/*List objectArray = (List) etModel.get("valueMap");
 		List  objectArray2 = (List)objectArray.get(1);
 		List objectArray3 = (List)objectArray2.get(1);
 		ETModel model2 = (ETModel)objectArray3.get(0);
-		String type2 = (String) model2.get("type2"); 
+		String type2 = (String) model2.get("type2"); */
 		System.out.println(etModel.toString());
 	}
 }

@@ -5,29 +5,29 @@ import java.io.Serializable;
 public class ETException extends RuntimeException implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
-	private String errorCode = "";
-	private String title = "";
+	private String errorType = "";
+	private String logInfo = "";
 	public ETException(){
 		super();
 	}
 	public ETException(String message){
 		super(message);
 	}
-	public ETException(String title, String message){
+	public ETException(String logInfo, String message){
 		this(message);
-		this.title = title;
+		this.logInfo = logInfo;
 	}
-	public ETException(String errorCode, String title, String message){
+	public ETException(String errorType, String logInfo, String message){
 		this(message);
-		this.title = title;
-		this.errorCode = errorCode;
+		this.logInfo = logInfo;
+		this.errorType = errorType;
 	}
-	public String getErrorCode(){
-		return errorCode;
+	public String getErrorType(){
+		return errorType;
 	}
 	
-	public String getTitle(){
-		return title;
+	public String getLogInfo(){
+		return logInfo;
 	}
 
 }

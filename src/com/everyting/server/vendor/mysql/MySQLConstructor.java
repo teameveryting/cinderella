@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.everyting.server.ServiceExecutor;
+import com.everyting.server.DBExecutor;
 import com.everyting.server.exception.ETException;
 import com.everyting.server.model.ETModel;
 import com.everyting.server.util.DataHandler;
@@ -19,6 +19,13 @@ public class MySQLConstructor implements SQLConstructor{
 	public  final String ET_USERS_QUERY = "SELECT USER_ID,USER_NAME,DISPLAY_NAME,EMAIL_ADDRESS,ENCRYPT_PASSWORD,"
 			+ "AVATAR_URL,LAST_LOGIN_DATE,LAST_LOGIN_IP"
 			+ " FROM ET_USERS WHERE EMAIL_ADDRESS= ?";
+	
+	
+	/*Verify The DS details from ET_DATA_SOURCES, ET_DS_ATTRS*/
+	public ETModel getDSDetails(String dataSource){
+		
+		return null;
+	}
 		
 	/*Returns ETModel contains sql(String), preparedParams(List<Object>)*/
 	@SuppressWarnings("unchecked")
@@ -113,12 +120,12 @@ public class MySQLConstructor implements SQLConstructor{
 					 table = getTableName((String) requestData.get("dataSource"));
 				}
 				else if("valueMap".equalsIgnoreCase(key)){
-					ETModel valueModel = getValueCluase((ETModel)requestData.get("valueMap"));
+					ETModel valueModel = getValueCluase(table, (ETModel)requestData.get("valueMap"));
 					valueClause = (String) valueModel.get("valueClause");
 					valueParamsList = (List<Object>)valueModel.get("valueParams");
 				}
 				else if("setMap".equalsIgnoreCase(key)){
-					ETModel setModel = getSetCluase((ETModel)requestData.get("setMap"));
+					ETModel setModel = getSetCluase(table, (ETModel)requestData.get("setMap"));
 					setClause = (String) setModel.get("setClause");		
 					setParamsList = (List<Object>)setModel.get("setParams");
 				}
@@ -206,20 +213,25 @@ public class MySQLConstructor implements SQLConstructor{
 	}
 	@Override
 	public String getPKAIColumn(String table){
-		String tableDescSql = constructTableDescSQL(table);
-		ServiceExecutor serviceExecutor = new ServiceExecutor();
-		List<ETModel> dsAttrList = serviceExecutor.rawExecuteQuery(tableDescSql, null);
+		List<ETModel> dsAttrList = DBExecutor.rawExecuteQuery("SELECT * FROM ET_DS WHERE TABLE_NAME = ?", new Object[]{table});
 		for(int i=0; i< dsAttrList.size(); i++){
 			ETModel columnInfoModel = dsAttrList.get(i);
-			String extra =  (String)columnInfoModel.get("extra");
-			if(extra != null && "auto_increment".equalsIgnoreCase(extra)){
-				String columnKey = (String)columnInfoModel.get("columnKey");
-				if(columnKey != null && "PRI".equalsIgnoreCase(columnKey)){
-					return (String) columnInfoModel.get("columnName");
-				}
+			String dbVendor = (String) columnInfoModel.get("dbVendor");
+			if("mysql".equalsIgnoreCase(dbVendor)){
+				return (String) columnInfoModel.get("pkName");
 			}
 		}
 		return null;
+	}
+	@Override
+	public ETModel getETFileInfo(int fileId){
+		List<ETModel> etFileInfo = DBExecutor.rawExecuteQuery("SELECT * FROM ET_FILES WHERE FILE_ID = ?", new Object[]{fileId});
+		if(etFileInfo != null && etFileInfo.size() > 0){
+			return etFileInfo.get(0);
+		}else{
+			throw new ETException("NoSuchFileExists", "MySQLConstructor throws NoSuchFile Exception while getETFileInfo" , 
+								  "No such file is found with the given fileId:" + fileId);
+		}
 	}
 	@Override
 	public String  getUserLoginSQL(){
@@ -349,7 +361,8 @@ public class MySQLConstructor implements SQLConstructor{
 		fromBuilder.append(" ");
 		return fromBuilder.toString();
 	}
-	private  ETModel getWhereClause(String whereClause, List<Object> whereClauseParams){
+	@Override
+	public  ETModel getWhereClause(String whereClause, List<Object> whereClauseParams){
 		/*Ex: #column1# <= ? #column2# != ? AND #column3# in (?,?,?)*/
 		ETModel etModel = new ETModel();
 		StringBuilder whereClauseBuilder = new StringBuilder("WHERE ");
@@ -373,28 +386,42 @@ public class MySQLConstructor implements SQLConstructor{
 		etModel.set("whereClauseParams", whereClauseParams);
 		return etModel;
 	}
-	private  ETModel getValueCluase(ETModel valueMap){
+	private  ETModel getValueCluase(String table, ETModel valueMap){
 		ETModel etModel = new ETModel();
 		List<Object> preparedParamsList = new ArrayList<>();
 		StringBuilder valueMapBuilder = new StringBuilder();
 		StringBuilder columnBuilder = new StringBuilder("(");
 		StringBuilder valueBuilder = new StringBuilder("VALUES(");
 		Iterator<String> iterator = valueMap.getKeyIterator();
+		List<ETModel> columnInfo = DBExecutor.rawExecuteQuery("SELECT * FROM ET_DS_ATTRS WHERE TABLE_NAME = ?", new Object[]{table});
+		if(!(columnInfo != null && columnInfo.size() > 0)){
+			throw new ETException("InvalidAttrsInfo", "MySQLConstructor throws InvalidAttrsInfo while getValueCluase",
+					"No column attrributes are found in ET_DS_ATTRS for " + table);
+		}
 		int count = 0;
 		while(iterator.hasNext()){
 			String key = iterator.next();
 			String columnName = DataHandler.toUpperSplitCase(key);
-			if(count > 0){
-				columnBuilder.append(",");
-				columnBuilder.append(columnName);
-				valueBuilder.append(",");
-				valueBuilder.append("?");
-			}else{
-				columnBuilder.append(columnName);
-				valueBuilder.append("?");
+			boolean isColumnExists = false;
+			for(ETModel entry: columnInfo){
+				if(columnName.equals((String)entry.get("columnName"))){
+					isColumnExists = true;
+					break;
+				}
 			}
-			preparedParamsList.add(valueMap.get(key));
-			count++;
+			if(isColumnExists){
+				if(count > 0){
+					columnBuilder.append(",");
+					columnBuilder.append(columnName);
+					valueBuilder.append(",");
+					valueBuilder.append("?");
+				}else{
+					columnBuilder.append(columnName);
+					valueBuilder.append("?");
+				}
+				preparedParamsList.add(valueMap.get(key));
+				count++;
+			}
 		}
 		columnBuilder.append(") ");
 		valueBuilder.append(") ");
@@ -404,28 +431,42 @@ public class MySQLConstructor implements SQLConstructor{
 		etModel.set("valueParams", preparedParamsList);
 		return etModel;
 	}
-	private  ETModel getSetCluase(ETModel setMap){
+	private  ETModel getSetCluase(String table, ETModel setMap){
 		ETModel etModel = new ETModel();
 		List<Object> preparedParamsList = new ArrayList<>();
 		StringBuilder setMapBuilder = new StringBuilder("SET ");
 		Iterator<String> iterator = setMap.getKeyIterator();
+		List<ETModel> columnInfo = DBExecutor.rawExecuteQuery("SELECT * FROM ET_DS_ATTRS WHERE TABLE_NAME = ?", new Object[]{table});
+		if(!(columnInfo != null && columnInfo.size() > 0)){
+			throw new ETException("InvalidAttrsInfo", "MySQLConstructor throws InvalidAttrsInfo while getValueCluase",
+					"No column attrributes are found in ET_DS_ATTRS for " + table);
+		}
 		int count = 0;
 		while(iterator.hasNext()){
 			String key = iterator.next();
 			String columnName = DataHandler.toUpperSplitCase(key);
-			if(count > 0){
-				setMapBuilder.append(",");
-				setMapBuilder.append(columnName);
-				setMapBuilder.append("=");
-				setMapBuilder.append("?");
-				
-			}else{
-				setMapBuilder.append(columnName);
-				setMapBuilder.append("=");
-				setMapBuilder.append("?");
+			boolean isColumnExists = false;
+			for(ETModel entry: columnInfo){
+				if(columnName.equals((String)entry.get("columnName"))){
+					isColumnExists = true;
+					break;
+				}
 			}
-				preparedParamsList.add(setMap.get(key));
-				count++;
+			if(isColumnExists){
+				if(count > 0){
+					setMapBuilder.append(",");
+					setMapBuilder.append(columnName);
+					setMapBuilder.append("=");
+					setMapBuilder.append("?");
+					
+				}else{
+					setMapBuilder.append(columnName);
+					setMapBuilder.append("=");
+					setMapBuilder.append("?");
+				}
+					preparedParamsList.add(setMap.get(key));
+					count++;
+			}
 		}
 		setMapBuilder.append(" ");
 		etModel.set("setClause", setMapBuilder.toString());

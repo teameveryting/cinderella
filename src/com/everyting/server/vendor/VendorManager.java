@@ -14,4 +14,9 @@ public  class VendorManager {
 		}
 		return null;
 	}
+	
+	public static String getDBVendor(){
+		ETModel dbInfo = DBConnectionManager.getInstance().getDBInfo();
+		return (String) dbInfo.get("vendor");
+	}
 }

@@ -14,8 +14,8 @@ public class Tester {
 		//toUpperSplitCaseTester();
 		//toCamelCaseTester();
 	}catch(ETException ex){
-		System.out.println("ErrorCode:" + ex.getErrorCode()) ;
-		System.out.println("ErrorTitle:" + ex.getTitle() );
+		System.out.println("ErrorCode:" + ex.getErrorType()) ;
+		System.out.println("ErrorTitle:" + ex.getLogInfo() );
 		System.out.println("Msg:" + ex.getMessage());
 	}
 	}
@@ -24,13 +24,13 @@ public class Tester {
 		try{
 			throw new ETException("1000", "Exception testing success");
 		}catch(ETException e){
-			System.out.println("ErrorCode:" + e.getErrorCode());
+			System.out.println("ErrorCode:" + e.getErrorType());
 			System.out.println("Message" + e.getMessage());
 		}
 	}
 	
 	public static void getRequestModelTester(){
-		String testData = "{\"string\":\"String data\", \"number\":1000, \"double:10.00}";
+		//String testData = "{\"string\":\"String data\", \"number\":1000, \"double:10.00}";
 		ETModel etModel = new ETModel();//DataHandler.getRequestModel(testData);
 		Iterator<String> iterator = etModel.getKeyIterator();
 		while(iterator.hasNext()){

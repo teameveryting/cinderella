@@ -1,0 +1,19 @@
+[
+     {
+        "state": "app.admin",
+        "url": "/admin",
+        "viewParent": "app",
+        "templateUrl": "app/partials/admin/admin.html",
+        "controller": "adminCntrl",
+        "resolve": "app/js/controllers/admin.js"
+    },
+    {
+        "state": "app.admin.platfrom-pages",
+        "url": "/platfrom-pages",
+        "viewParent": "app",
+        "templateUrl": "app/partials/admin/platform-pages.html",
+        "controller": "ptPagesCntrl",
+        "resolve": "app/js/controllers/platform-pages.js"
+    }
+
+]

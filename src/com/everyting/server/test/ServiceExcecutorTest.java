@@ -5,7 +5,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.everyting.server.ServiceExecutor;
+import com.everyting.server.DBExecutor;
 import com.everyting.server.exception.ETException;
 import com.everyting.server.model.ETModel;
 import com.everyting.server.util.DataHandler;
@@ -16,8 +16,8 @@ public class ServiceExcecutorTest {
 		 try{	
 			main();
 		 }catch(ETException exception){
-			 System.out.println(exception.getErrorCode());
-			 System.out.println(exception.getTitle());
+			 System.out.println(exception.getErrorType());
+			 System.out.println(exception.getLogInfo());
 			 System.out.println(exception.getMessage());
 		 }catch(RuntimeException exception){
 			 System.out.println("RuntimeException:" + exception.getMessage());
@@ -27,7 +27,6 @@ public class ServiceExcecutorTest {
 	}
 	
 	public static void main() throws JSONException {
-		ServiceExecutor serviceExecutor = new ServiceExecutor();
 
 		/*Insert Operation Test*/
 		/*ETModel insertETModel = DataHandler.toETModel(getJSONInsert());
@@ -47,7 +46,7 @@ public class ServiceExcecutorTest {
 		
 		/*Batch Insert Operation Test*/
 		ETModel batchInsertETModel = DataHandler.toETModel(getJSONBatchInsert());
-		List<ETModel> batchInsertResult = serviceExecutor.batchExecuteUpdate("batchInsert", batchInsertETModel);
+		List<ETModel> batchInsertResult = DBExecutor.batchExecuteUpdate("batchInsert", batchInsertETModel);
 		System.out.println(batchInsertResult.toString());
 		
 		/*Batch Update Operation Test*/

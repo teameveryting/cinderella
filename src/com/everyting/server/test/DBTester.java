@@ -3,7 +3,7 @@ package com.everyting.server.test;
 import java.util.Iterator;
 import java.util.List;
 
-import com.everyting.server.ServiceExecutor;
+import com.everyting.server.DBExecutor;
 import com.everyting.server.exception.ETException;
 import com.everyting.server.model.ETModel;
 
@@ -13,7 +13,7 @@ public class DBTester {
 		try {
 			main();
 		} catch (ETException e) {
-			System.out.println(e.getTitle());
+			System.out.println(e.getErrorType());
 			System.out.println(e.getMessage());
 		}
 	}
@@ -31,8 +31,7 @@ public class DBTester {
 		
 		batchModel.set("valueMapList", new Object[]{batch1, batch2, batch3});
 		
-		ServiceExecutor serviceExecutor = new ServiceExecutor();
-		List<ETModel> batchResponse = serviceExecutor.batchExecuteUpdate("batchInsert", batchModel);
+		List<ETModel> batchResponse = DBExecutor.batchExecuteUpdate("batchInsert", batchModel);
 		
 		for(int i=0; i< batchResponse.size(); i++){
 			ETModel batchdata = batchResponse.get(i);
@@ -43,7 +42,7 @@ public class DBTester {
 			}
 			System.out.println();
 		}
-		String rawSQL = "INSERT INTO ET_DUMMY(NAME) VALUES(?)";		
+		//String rawSQL = "INSERT INTO ET_DUMMY(NAME) VALUES(?)";		
 				/*ETModel responseModel = serviceExecutor.executeUpdate("DELETE", updateModel);
 		//ETModel responseModel = serviceExecutor.executeUpdate(rawSQL,"ET_DUMMY",  new Object[]{"TOM"});
 		Iterator<String> iterator = responseModel.getKeyIterator();
