@@ -619,6 +619,7 @@ a:hover {
 .m20-t{
 	margin-top: 20px; 
 }
-.pull-right{
-	float: right;
+.page-view{
+	padding-left: 55px;
+	padding-right: 20px;
 }
