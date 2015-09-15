@@ -23,21 +23,44 @@ app.controller("interpreterEditCntrl", function($scope, $stateParams,$state, pla
 	    $scope.refresh = !$scope.refresh;
 	};
 
-	$scope.editorOptions = function(mode){
+	$scope.editorOptions = function(mode, editor){
 		return{
+			 enter: "newline-and-indent",
+	         tab: "reindent-selection",
+	         ctrl_enter: "reparse-buffer",
+	         ctrl_z: "undo",
+	         ctrl_y: "redo",
+			 autoCloseBrackets: true,
+		     matchTags: true,
+		     showTrailingSpace: true,
 			 lineNumbers: true,
 		      indentWithTabs: true,
+		      highlightSelectionMatches: true,
 		      theme:'eclipse',
 		      lineWrapping : true,
-		      htmlMode: true,
-		      mode:mode,
+		      lint: true,
+		      foldGutter: true,
+		      gutters: ['CodeMirror-lint-markers','CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
+		      mode: mode,
 		      styleActiveLine: true,
 			  matchBrackets: true,
+			  tab: 'indentAuto',
+			  keywords : ["requestData", "VendorManager"],
+			  extraKeys: {
+			        "Tab": function(cm) {
+			           CodeMirror.commands.indentAuto(editor);
+			        },
+			        'Ctrl-Q': function(cm) {
+			             cm.foldCode(cm.getCursor());
+			         },
+			         'Ctrl-Space': 'autocomplete'
+			  },
 			  onLoad : function(_cm){
 			      $scope.setCodeMirrorMode = function(mode){
 			        _cm.setOption("mode", mode.toLowerCase());
 			      };
-			  }
+			  },
+			 
 		};
 	};
 	$scope.isEtInterpreterBusy = false;

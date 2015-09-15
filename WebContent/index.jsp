@@ -23,7 +23,8 @@
     <link rel="stylesheet" href="vendor/simple-line-icons/simple-line-icons.css" type="text/css">
     <link rel="stylesheet" href="vendor/code-mirror/codemirror.css">
     <link rel="stylesheet" href="vendor/code-mirror/eclipse.css">
-    
+    <link rel="stylesheet" href="vendor/code-mirror/eclipse.css">
+    <link rel="stylesheet" href="vendor/code-mirror/lint/lint.css">
     <link rel="stylesheet" href="vendor/sb-admin2/sb-admin-2.css">
 	<link rel="stylesheet" href="app/css/indexStyle.css">
 	
@@ -32,7 +33,6 @@
 	<script src="vendor/angular-js/angular-sanitize.min.js"></script>
 	<script src="vendor/angular-js/angular-ui-router.min.js"></script>
     <script src="vendor/angular-js/angular-animate.min.js"></script>
-
 	<script src="vendor/ng-storage/angular-local-storage.min.js"></script>
 	<script src="vendor/ocLazyLoad/ocLazyLoad.min.js"></script>
 	<script src="vendor/loading-bar/loading-bar.js"></script>
@@ -46,8 +46,20 @@
 	<script src="vendor/code-mirror/css.js"></script>
 	<script src="vendor/code-mirror/javascript.js"></script>
 	<script src="vendor/code-mirror/matchbrackets.js"></script>
-	<script src="vendor/code-mirror/ui-codemirror.js"></script>
+	<!--CodeMirror Lint Add on-->
+	<script src="vendor/code-mirror/lint/jshint.js"></script>
+	<script src="vendor/code-mirror/lint/jsonlint.js"></script>
+	<script src="vendor/code-mirror/lint/csslint.js"></script>
+	<script src="vendor/code-mirror/lint/lint.js"></script>
+	<script src="vendor/code-mirror/lint/javascript-lint.js"></script>
+	<!-- <script src="vendor/code-mirror/lint/json-lint.js"></script> -->
+	<script src="vendor/code-mirror/lint/css-lint.js"></script>
 	
+	
+	
+	
+	
+	<script src="vendor/code-mirror/ui-codemirror.js"></script>
 	<script src="app/js/app.js"></script>
 	<script src="app/js/services/app_services.js"></script>
 	<script src="app/js/directives/app_directives.js"></script>
