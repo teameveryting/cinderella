@@ -8,7 +8,7 @@ app.config(function( $stateProvider,$httpProvider, $locationProvider, $urlRouter
 		cfpLoadingBarProvider.includeBar = true;
 	    cfpLoadingBarProvider.includeSpinner = true;
 	    cfpLoadingBarProvider.latencyThreshold = 500;
-	    cfpLoadingBarProvider.parentSelector = '.ui-view-wrapper';
+	    //cfpLoadingBarProvider.parentSelector = '.ui-view-wrapper';
 	    /*Local Storage fixing*/
 	    localStorageServiceProvider.setPrefix('cinderella');
 	    /*XSRF token naming*/

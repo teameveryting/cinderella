@@ -126,6 +126,7 @@ app.factory("platformUtils",  [ 'dialogs','$http','$q','$rootScope','$location',
 	platformUtils.clearCache = function(){
 		localStorageService.clearAll();
 	};
+
 	platformUtils.getDSInfo =function(dataSource){
 		var ds = dataSource+"#ds#";
 		var storedDsInfo =  JSON.parse(localStorageService.get(ds));
@@ -142,7 +143,10 @@ app.factory("platformUtils",  [ 'dialogs','$http','$q','$rootScope','$location',
 		}
 		var deffered = $q.defer();
 			if((!(ignoreLocalCheck !== null && ignoreLocalCheck)) && (!platformUtils.getDSInfo(dataSource))) 
-				{deffered.resolve({});return deffered.promise;};
+				{
+					 deffered.resolve({});
+					return deffered.promise;
+				};
 			var data =  options || {};
 			data.dataSource = dataSource;
 			var stringifiedData = JSON.stringify(data);
