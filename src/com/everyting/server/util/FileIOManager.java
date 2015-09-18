@@ -87,7 +87,7 @@ public class FileIOManager {
     	return fileStreamList;
     }
    /*Request Data: data:stringifiedJsonForm, fileMapping:stringifiedJson, file:Array of Files*/
-	public static ETModel getUploadedFileFormData(HttpServletRequest request){
+	public static ETModel extractUploadedFileFormData(HttpServletRequest request){
 		ETModel etModel = new ETModel();
 		Map<String, InputStream> uplodedFileMap = new HashMap<>();
 		// checks if the request actually contains upload file

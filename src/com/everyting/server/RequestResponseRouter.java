@@ -59,8 +59,8 @@ public class RequestResponseRouter extends HttpServlet {
 						String fileOpration = opeartion.substring(6);
 						if(fileOpration.contains("upload/")){
 							
-						}if(fileOpration.equalsIgnoreCase("formFileUpload")){
-							
+						}if(fileOpration.equalsIgnoreCase("uploadFileForm")){
+						responseData = APIManager.manageFileFormDataUpload(request);
 						}
 					}
 					else if(opeartion.equalsIgnoreCase("processOnServer")){

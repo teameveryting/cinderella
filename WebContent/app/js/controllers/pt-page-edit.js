@@ -22,6 +22,7 @@ app.controller("ptPagesEditCntrl", function($scope, $stateParams,$state, platfor
 		"\t\t/*Your controller here!*/\n"+
 		"\t\t$scope.test = \"Page Workig....\"\n\n"+
 		"});";
+	$scope.pageDetails.lazyLoad = "{\n[]}";
 
 	if(pageName){
 		var options = {
@@ -43,39 +44,38 @@ app.controller("ptPagesEditCntrl", function($scope, $stateParams,$state, platfor
 	$scope.selectTab = function() {
 	    $scope.refresh = !$scope.refresh;
 	};
-
-
+	CodeMirror.commands.autocomplete = function(cm) {
+        cm.showHint({hint: CodeMirror.hint.anyword});
+      };
 	$scope.editorOptions = function(mode, editor){
 		return{
 			 enter: "newline-and-indent",
-	         tab: "reindent-selection",
 	         ctrl_enter: "reparse-buffer",
 	         ctrl_z: "undo",
 	         ctrl_y: "redo",
 			 autoCloseBrackets: true,
+			 autoCloseTags: true,
 		     matchTags: true,
 		     showTrailingSpace: true,
 			 lineNumbers: true,
-		      indentWithTabs: true,
-		      highlightSelectionMatches: true,
+		     indentWithTabs: true,
+		     highlightSelectionMatches: true,
 		      theme:'eclipse',
 		      lineWrapping : true,
 		      htmlMode: true,
 		      lint: true,
 		      foldGutter: true,
 		      gutters: ['CodeMirror-lint-markers','CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
-		      mode: mode,
+		      mode: {name: mode, globalVars: true},
 		      styleActiveLine: true,
 			  matchBrackets: true,
 			  tab: 'indentAuto',
 			  extraKeys: {
-			        "Tab": function(cm) {
-			           CodeMirror.commands.indentAuto(editor);
-			        },
 			        'Ctrl-Q': function(cm) {
 			             cm.foldCode(cm.getCursor());
 			         },
-			         'Ctrl-Space': 'autocomplete'
+			         'Ctrl-Space': 'autocomplete',
+			         'Alt-F': "findPersistent"
 			  },
 			  onLoad : function(_cm){
 			      $scope.setCodeMirrorMode = function(mode){

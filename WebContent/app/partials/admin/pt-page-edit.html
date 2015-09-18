@@ -24,7 +24,7 @@
 		style="margin-top: -12px">
 		<tabset justified="true"> <tab heading="Details">
 		<div class="row" style="padding: 20px">
-			<form role="form" name="form">
+			<ng-form role="form" name="form" ng-model="form">
 				<div class="row">
 					<div class="form-group col-lg-6 col-md-6 col-sm-6 has-error">
 						<label>Page Name</label> <input class="form-control " type="text"
@@ -79,7 +79,7 @@
 							ng-click="save()">&nbsp;Save&nbsp;</button> -->
 					</div>
 				</div>
-			</form>
+			</ng-form>
 		</div>
 		</tab> <tab heading="Html" ng-click="selectTab()">
 		<div ng-model="pageDetails.html" ui-codemirror ui-refresh='refresh'

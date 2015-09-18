@@ -45,7 +45,10 @@ app.factory("platformUtils",  [ 'dialogs','$http','$q','$rootScope','$location',
 	};
 	
 	platformUtils.getBaseUrl = function(){
-		return $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/EappBuilder/";
+		return $location.protocol() + "://" + $location.host() + ":" + $location.port() + "/cinderella/";
+	};
+	platformUtils.getRelativeUrl = function(){
+		return  "/cinderella/";
 	};
 	platformUtils.getDownloadBlobUrl = function(blobID, fileName, isInline){
 		return "service/blob/download/" + blobID +"/"+ fileName +"_index.html?inline = " +isInline;
@@ -195,6 +198,45 @@ app.factory("platformUtils",  [ 'dialogs','$http','$q','$rootScope','$location',
 		}
 		return deffered.promise;
 	};
+ platformUtils.injectCSS =  function(urlArr){
+		  var createLink = function(url) {
+		    var link = document.createElement('link');
+		    link.rel = "stylesheet";
+		    link.type = "text/css";
+		    link.href = url;
+		    return link;
+		  };
+		  var isLoaded = function (url) {
+		    for (var i in document.styleSheets) {
+		      var href = document.styleSheets[i].href || "";
+		      if (href.indexOf(url) > -1) return true;
+		    }
+		    return false;
+		  };
+		  var deferred = $q.defer();
+		  for(var i=0; i< urlArr.length; i++){
+		    	var url = urlArr[i];
+	    	if(!angular.element('link#' + "id").length) {
+			      if(!isLoaded(url)){
+			    	  var link = createLink(url);
+				      link.onload = deferred.resolve;
+				      angular.element('head').append(link);
+			      }
+			   }
+		    }
+		    return deferred.promise;
+ 	};
+ 	
+ 	platformUtils.uploadFileFormData = function(data, fileMapping, files){
+		 return  Upload.upload({
+	            url: platformUtils.getRelativeUrl() + 'api/files/uploadFileForm',
+		           fields: {
+		                'data': JSON.stringify(data),
+		                'fileMapping':JSON.stringify(fileMapping || {})
+		            },
+		            file: files
+		        });
+ 	};
 	platformUtils.processOnserver = function(){
 			
 	};

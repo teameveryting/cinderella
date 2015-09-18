@@ -21,15 +21,13 @@
     <link rel="stylesheet" href="vendor/loading-bar/loading-bar.css">
     <link rel="stylesheet" href="vendor/ng-toaster/toaster.css">
     <link rel="stylesheet" href="vendor/simple-line-icons/simple-line-icons.css" type="text/css">
-    <link rel="stylesheet" href="vendor/code-mirror/codemirror.css">
-    <link rel="stylesheet" href="vendor/code-mirror/eclipse.css">
-    <link rel="stylesheet" href="vendor/code-mirror/eclipse.css">
-    <link rel="stylesheet" href="vendor/code-mirror/lint/lint.css">
     <link rel="stylesheet" href="vendor/sb-admin2/sb-admin-2.css">
 	<link rel="stylesheet" href="app/css/indexStyle.css">
 	
 	<script src="vendor/jquery/jquery.min.js"></script>
-	 <script src="vendor/angular-js/angular.min.js"></script> 
+	<script src="vendor/ng-file-upload/ng-file-upload-shim.min.js"></script>
+	<script src="vendor/angular-js/angular.min.js"></script>
+	 <script src="vendor/ng-file-upload/ng-file-upload.min.js"></script>
 	<script src="vendor/angular-js/angular-sanitize.min.js"></script>
 	<script src="vendor/angular-js/angular-ui-router.min.js"></script>
     <script src="vendor/angular-js/angular-animate.min.js"></script>
@@ -40,26 +38,8 @@
 	<script src="vendor/ui-bootstrap/ui-bootstrap-tpls-0.13.3.min.js"></script>
 	<script src="vendor/ng-toaster/toaster.js"></script>
 	<script src="vendor/ng-dialog/dialogs.min.js"></script>
-	<script src="vendor/code-mirror/codemirror.js"></script>
-	<script src="vendor/code-mirror/xml.js"></script>
-	<script src="vendor/code-mirror/clike.js"></script>
-	<script src="vendor/code-mirror/css.js"></script>
-	<script src="vendor/code-mirror/javascript.js"></script>
-	<script src="vendor/code-mirror/matchbrackets.js"></script>
-	<!--CodeMirror Lint Add on-->
-	<script src="vendor/code-mirror/lint/jshint.js"></script>
-	<script src="vendor/code-mirror/lint/jsonlint.js"></script>
-	<script src="vendor/code-mirror/lint/csslint.js"></script>
-	<script src="vendor/code-mirror/lint/lint.js"></script>
-	<script src="vendor/code-mirror/lint/javascript-lint.js"></script>
-	<!-- <script src="vendor/code-mirror/lint/json-lint.js"></script> -->
-	<script src="vendor/code-mirror/lint/css-lint.js"></script>
-	
-	
-	
-	
-	
-	<script src="vendor/code-mirror/ui-codemirror.js"></script>
+	 <script src="vendor/code-mirror/codemirror.js"></script>
+
 	<script src="app/js/app.js"></script>
 	<script src="app/js/services/app_services.js"></script>
 	<script src="app/js/directives/app_directives.js"></script>

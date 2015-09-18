@@ -2,9 +2,12 @@ package com.everyting.server.api;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import com.everyting.server.InterpreterHandler;
 import com.everyting.server.DBExecutor;
 import com.everyting.server.model.ETModel;
+import com.everyting.server.util.FileIOManager;
 
 public class APIManager {
 	
@@ -58,6 +61,17 @@ public class APIManager {
 		}
 		return responseData;
 	}
-	
-	
+	public static ETModel manageFileFormDataUpload(HttpServletRequest request){
+		ETModel requestData = FileIOManager.extractUploadedFileFormData(request);
+		ETModel responseData = new ETModel();
+		/*Check for before Interpreters*/
+		if(requestData.get("beforeAPICall") != null && ((String)requestData.get("beforeAPICall")).trim().length() > 0){
+			InterpreterHandler.handleBeforeAPICall(requestData, responseData);
+		}
+		/*Check for after InterPreters*/
+		if(requestData.get("afterAPICall") != null){
+			InterpreterHandler.handleAfterAPICall(requestData, responseData);
+		}
+		return responseData; 
+	}
 }
