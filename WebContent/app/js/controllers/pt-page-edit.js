@@ -20,9 +20,12 @@ app.controller("ptPagesEditCntrl", function($scope, $stateParams,$state, platfor
 	$scope.pageDetails.js = "var app = angular.module(\"app\");\n"+
 		"app.controller(\"yourCntrl\", function($scope,platformUtils){\n\n"+
 		"\t\t/*Your controller here!*/\n"+
-		"\t\t$scope.test = \"Page Workig....\"\n\n"+
+		"\t\t$scope.test = \"Page Workig....\";\n\n"+
 		"});";
-	$scope.pageDetails.lazyLoad = "{\n[]}";
+	$scope.pageDetails.lazyLoad = "/*{\n"+
+	"\t\"js\" :[\"/vendor/somefolder/example1.js\", \"/vendor/somefolder/example2.js\"],\n"+
+	"\t\"css\":[\"/vendor/somefolder/example1.css\", \"/vendor/somefolder/example2.css\"],\n"+
+	"\t\"vendorBundles\":[\"code_mirror\", \"example_bundle\"]\n }*/";
 
 	if(pageName){
 		var options = {

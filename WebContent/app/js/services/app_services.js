@@ -1,7 +1,7 @@
 'use strict';
 var app = angular.module("app");
-app.factory("platformUtils",  [ 'dialogs','$http','$q','$rootScope','$location','localStorageService',
-                                function(dialogs, $http, $q, $rootScope, $location, localStorageService){ 
+app.factory("platformUtils",  [ 'dialogs','$http','$q','$rootScope','$location','localStorageService','Upload','$timeout',
+                                function(dialogs, $http, $q, $rootScope, $location, localStorageService, Upload, $timeout){ 
 	var platformUtils = {};
 	var update = function(dataSource, requestData,pkColumnName, options){
 			var data = {};
@@ -227,12 +227,14 @@ app.factory("platformUtils",  [ 'dialogs','$http','$q','$rootScope','$location',
 		    return deferred.promise;
  	};
  	
- 	platformUtils.uploadFileFormData = function(data, fileMapping, files){
-		 return  Upload.upload({
+ 	platformUtils.uploadFileFormData = function(requestData, fileMapping, files, options){
+ 		var data =  options || {};
+		data.data = requestData;
+		data.fileMapping = fileMapping;
+		return  Upload.upload({
 	            url: platformUtils.getRelativeUrl() + 'api/files/uploadFileForm',
 		           fields: {
 		                'data': JSON.stringify(data),
-		                'fileMapping':JSON.stringify(fileMapping || {})
 		            },
 		            file: files
 		        });

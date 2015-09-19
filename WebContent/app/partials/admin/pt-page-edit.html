@@ -88,9 +88,9 @@
 		<div ng-model="pageDetails.js" ui-codemirror ui-refresh='refresh'
 			ui-codemirror-opts="editorOptions('javascript', '#editor')" id ="editor"
 			style="margin: -20px"></div>
-		</tab> <tab heading="Lazy Load">
-		<div ng-model="pageDetails.lazyLoad" ui-codemirror
-			ui-refresh='refresh' ui-codemirror-opts="editorOptions('javascript')"
+		</tab> <tab heading="Lazy Load" ng-click="selectTab()">
+		<div ng-model="pageDetails.lazyLoad" ui-codemirror ui-refresh='refresh'
+		 ui-codemirror-opts="editorOptions('javascript')"
 			style="margin: -20px"></div>
 		</tab> </tabset>
 	</div>

@@ -8,9 +8,6 @@
 				<footer>Manage Templates</footer>
 			</blockquote>
 		</div>
-		<div class="pull-right" style="margin-top: 20px; margin-right: 50px">
-			<button ng-disabled ="form.$invalid" class="btn btn-success" ng-click="$state.go('app.admin.templates.tmp-edit', {tmp:null})">&nbsp;New&nbsp;</button>
-		</div>
 	</div>
 </div>
 <div class="row">
@@ -19,7 +16,6 @@
 					<div class="panel-body">
 						<div class="row">
 								<form role="form">
-								
 									<div class="form-group col-lg-7 col-md-7 col-sm-7 has-error">
 										<label>Template Title</label> 
 										<input class="form-control " type="text" name = "tmp_name" placeholder="Unique Name" ng-model="templateDetails.templateName" required>
@@ -54,15 +50,15 @@
 					</div>
 					<div class="panel-footer">
 						<div style="width:250px; margin: 0px auto;">
-							<button class="btn btn-primary" ng-click="addTemplate()">
+							<button class="btn btn-primary" ng-click="saveTemplate()">
 								<em class="fa fa-save"></em>&nbsp; Save
 							</button>
-							<button class="btn btn-info" ng-click="queryWidget()">
-								<em class="icon-refresh"></em>&nbsp;Refresh
+							<button class="btn btn-info" ng-click="reset()">
+								<em class="icon-refresh"></em>&nbsp;Reset
 							</button>
 						</div>
 						<p><i>{{log}}</i></p>
 					</div>
 				</div>
 			</div>
-		</div>
+</div>

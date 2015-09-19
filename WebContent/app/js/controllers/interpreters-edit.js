@@ -26,7 +26,6 @@ app.controller("interpreterEditCntrl", function($scope, $stateParams,$state, pla
 	$scope.editorOptions = function(mode, editor){
 		return{
 			 enter: "newline-and-indent",
-	         tab: "reindent-selection",
 	         ctrl_enter: "reparse-buffer",
 	         ctrl_z: "undo",
 	         ctrl_y: "redo",
@@ -47,9 +46,7 @@ app.controller("interpreterEditCntrl", function($scope, $stateParams,$state, pla
 			  tab: 'indentAuto',
 			  keywords : ["requestData", "VendorManager"],
 			  extraKeys: {
-			        "Tab": function(cm) {
-			           CodeMirror.commands.indentAuto(editor);
-			        },
+			       
 			        'Ctrl-Q': function(cm) {
 			             cm.foldCode(cm.getCursor());
 			         },

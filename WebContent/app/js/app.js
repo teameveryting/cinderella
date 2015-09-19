@@ -2,7 +2,7 @@ var $stateProviderRef = null;
 var platformUtilsRef = null;
 var vendorBundleRef = null;
 var app = angular.module("app",['ui.bootstrap', 'ui.router', 'oc.lazyLoad', 'chieffancypants.loadingBar', 
-                                'toaster','ngAnimate',   'ngSanitize',  'dialogs.main', 'LocalStorageModule', 
+                                'toaster','ngAnimate',   'ngSanitize',  'dialogs.main', 'LocalStorageModule','ngFileUpload' 
                                 ]);
 app.config(function( $stateProvider,$httpProvider, $locationProvider, $urlRouterProvider, $ocLazyLoadProvider, localStorageServiceProvider, cfpLoadingBarProvider) {
 	 	/*Loading Bar configuration*/

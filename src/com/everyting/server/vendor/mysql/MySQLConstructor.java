@@ -155,7 +155,7 @@ public class MySQLConstructor implements SQLConstructor{
 		ETModel responseData = new ETModel();
 		String sql = "";
 		List<List<Object>> preparedParamsList = new ArrayList<>();
-		if("batchInsert".equalsIgnoreCase(action)){
+		if("insert".equalsIgnoreCase(action)){
 			ETModel insertModel = new ETModel();
 			String dataSource = (String) requestData.get("dataSource");
 			insertModel.set("dataSource", dataSource);
@@ -167,7 +167,7 @@ public class MySQLConstructor implements SQLConstructor{
 				preparedParamsList.add((List<Object>) eachInsertResponse.get("preparedParams"));
 			}
 		}
-		if("batchUpdate".equalsIgnoreCase(action)){
+		if("update".equalsIgnoreCase(action)){
 			ETModel updateModel = new ETModel();
 			String dataSource = (String) requestData.get("dataSource");
 			updateModel.set("dataSource", dataSource);
@@ -186,7 +186,7 @@ public class MySQLConstructor implements SQLConstructor{
 				preparedParamsList.add((List<Object>) eachUpdateResponse.get("preparedParams"));
 			}
 		}
-		if("batchDelete".equalsIgnoreCase(action)){
+		if("delete".equalsIgnoreCase(action)){
 			ETModel deleteModel = new ETModel();
 			String dataSource = (String) requestData.get("dataSource");
 			deleteModel.set("dataSource", dataSource);
@@ -239,12 +239,12 @@ public class MySQLConstructor implements SQLConstructor{
 	}
 	@SuppressWarnings("unchecked")
 	private void checkForBatchExecuteSQLEssentails(String action, ETModel requestData){
-		if(action == null || !(("batchInsert".equalsIgnoreCase(action)) || 
-				 			   ("batchUpdate".equalsIgnoreCase(action)) ||
-				               ("batchDelete".equalsIgnoreCase(action))) ){
+		if(action == null || !(("insert".equalsIgnoreCase(action)) || 
+				 			   ("update".equalsIgnoreCase(action)) ||
+				               ("delete".equalsIgnoreCase(action))) ){
 			throw new ETException("InvalidAction", 
 					  "MySQLConstructor throws InvalidAction Exception while checkForBatchExecuteSQLEssentails",
-					  "Invalid/No action is specified, only batch Insert/update/delete are allowed");
+					  "Invalid/No action is specified, only Insert/update/delete are allowed");
 			}
 		if(requestData.get("dataSource") == null){
 			throw new ETException("InvalidDataSource", 

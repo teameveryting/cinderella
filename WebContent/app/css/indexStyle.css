@@ -639,3 +639,11 @@ a:hover {
   padding: 0 3px; 
   margin-right: 7px;
 }
+#loading-bar .bar {
+  background: #ffffff;
+}
+#loading-bar-spinner .spinner-icon {
+  border-top-color:  #ffffff;
+  border-left-color: #ffffff;
+  color: #ffffff;
+}

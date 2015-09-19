@@ -1,5 +1,7 @@
 package com.everyting.server;
 
+import java.io.InputStream;
+import java.net.URLConnection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +13,7 @@ import com.everyting.server.exception.ETException;
 import com.everyting.server.model.ETModel;
 import com.everyting.server.session.SessionManager;
 import com.everyting.server.util.DataHandler;
+import com.everyting.server.util.ETUtils;
 import com.everyting.server.util.FileIOManager;
 import com.everyting.server.vendor.SQLConstructor;
 import com.everyting.server.vendor.VendorManager;
@@ -35,7 +38,6 @@ public class ServiceManager {
 			}
 		return null;
 	}
-	
 	public static void downloadBlobStream(HttpServletRequest request, HttpServletResponse response){
 		ResponseWirter responseWirter = null;
 		try{
@@ -74,7 +76,18 @@ public class ServiceManager {
 				if(responseWirter != null)responseWirter.closeResources();
 			}
 	}
-	
+	public static int uploadETFileStream(ETModel fileData){
+		    String fileName = (String) fileData.get("fileName");
+		    if(fileName == null || !(fileName.trim().length() > 0)) 
+		    	throw new ETException("InvalidFileName", "ServiceManager throws InvalidFileName while uploadETFileStream", "Missing file name!");
+		    else fileName = fileName.trim();
+		    InputStream fileStream = (InputStream) fileData.get("fileStream");
+			int fileSize =  (fileData.get("fileSize") != null ? ETUtils.safeLongToInt((long)fileData.get("fileSize")) : -1) ;
+ 			String contentType = URLConnection.getFileNameMap().getContentTypeFor(fileName);
+			String fileUrl = FileIOManager.writeStreamToDisk(fileName, fileStream);
+			return DBExecutor.rawExecuteUpdate("INSERT INTO ET_FILES(FILE_NAME,CONTENT_TYPE,FILE_SIZE,FILE_PATH) VALUES(?,?,?,?)", 
+					new Object[]{fileName,contentType,fileSize,fileUrl });
+	}
 	public static ETModel login(HttpServletRequest request, ETModel userInfo){
 		ETModel loginResponse = new ETModel();
 		String email = (String) userInfo.get("email");
@@ -106,8 +119,7 @@ public class ServiceManager {
 		}
 	return loginResponse;
 	
-}
-
+ }
 	public static ETModel logout(HttpServletRequest request) {
 		ETModel responsetData = new ETModel();
 		if(! SessionManager.invalidateUserSession(request)){
@@ -118,6 +130,7 @@ public class ServiceManager {
 		}
 		return responsetData;
 	}
-
-
+	public static void uploadStream(InputStream inputStream){
+		
+	}
 }

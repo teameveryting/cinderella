@@ -10,8 +10,7 @@ import com.everyting.server.model.ETModel;
 
 public class InterpreterHandler {
 	
-	public static void handleBeforeAPICall(ETModel requestData, ETModel responseData){
-		String beforeInterpreter = (String) requestData.get("beforeAPICall");
+	public static void handleBeforeAPICall(String beforeInterpreter, ETModel requestData, ETModel responseData){
 		List<ETModel> queryResponse = DBExecutor.rawExecuteQuery("SELECT * FROM ET_INTERPRETERS WHERE NAME =  ?", new Object[]{beforeInterpreter});
 		if(queryResponse != null && queryResponse.size() > 0){
 			ETModel interpreterInfo = queryResponse.get(0);

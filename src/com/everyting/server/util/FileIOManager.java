@@ -2,6 +2,8 @@ package com.everyting.server.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,11 +26,12 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.everyting.server.exception.ETException;
-import com.everyting.server.model.ETFolderModel;
 import com.everyting.server.model.ETModel;
 public class FileIOManager {
 	
@@ -55,7 +58,7 @@ public class FileIOManager {
 		         outputStream.close();
 		         return;
 			}
-		} catch (IOException e) {
+		}catch (IOException e) {
 			throw new ETException("IOException", "FileIOManager throws IOException while writeFileStreamToResponse", e.getMessage());
 		}
     }
@@ -76,6 +79,7 @@ public class FileIOManager {
  				   ETModel fileStreamData = new ETModel();
  				   fileStreamData.set("fileName", item.getName());
  				   fileStreamData.set("fileStream", item.getInputStream());
+ 				  fileStreamData.set("fileSize", item.getSize());
  				   fileStreamList.add(fileStreamData);
 	    	   }
  			}
@@ -87,9 +91,9 @@ public class FileIOManager {
     	return fileStreamList;
     }
    /*Request Data: data:stringifiedJsonForm, fileMapping:stringifiedJson, file:Array of Files*/
-	public static ETModel extractUploadedFileFormData(HttpServletRequest request){
+	public static ETModel extractFileFormData(HttpServletRequest request){
 		ETModel etModel = new ETModel();
-		Map<String, InputStream> uplodedFileMap = new HashMap<>();
+		Map<String, ETModel> uplodedFileMap = new HashMap<String, ETModel>();
 		// checks if the request actually contains upload file
         if (!ServletFileUpload.isMultipartContent(request)) {
         	  throw new RuntimeException("Error: Form must has enctype=multipart/form-data.");
@@ -108,18 +112,22 @@ public class FileIOManager {
 	    		    InputStream inputStream = item.getInputStream();
 	            	String stringfiedJson = read(inputStream);
 	            	JSONObject requestJson = new JSONObject(stringfiedJson);
+	            	ETModel etModelData = DataHandler.toETModel(requestJson);
 	                if (item.getFieldName().equals("data")) {
-	                	etModel.set("data", requestJson);
+	                	etModel.set("data", etModelData);
 	                }else if(item.getFieldName().equals("fileMapping")){
 	                	etModel.set("fileMapping", requestJson);
 	                }
 	    	   }else{//Get uploaded files here!
-	    		   uplodedFileMap.put(item.getName(), item.getInputStream());
+	    		   ETModel fileMap = new ETModel();
+	    		   fileMap.set( "fileName", item.getName());
+	    		   fileMap.set("fileStream", item.getInputStream());
+	    		   fileMap.set("fileSize", item.getSize());
+	    		   uplodedFileMap.put(item.getName(), fileMap);
 	            }
  			  etModel.set("files", uplodedFileMap);
  			}
-		}
-        catch (FileUploadException e) {
+		}catch (FileUploadException e) {
 			 throw new RuntimeException("FileIOManager throws FileUploadException2:" + e.getCause());
 		} catch (IOException e) {
 			throw new RuntimeException("FileIOManager throws IOException:" + e.getMessage());
@@ -128,7 +136,6 @@ public class FileIOManager {
 		}
 		return etModel;
 	}
-	
 	private static String read(InputStream stream) throws IOException{
 		StringBuilder sb = new StringBuilder();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
@@ -137,17 +144,16 @@ public class FileIOManager {
 			while ((line = reader.readLine()) != null) {
 				sb.append(line);
 			}
-		}  finally {
+		}finally {
 				reader.close();
 		}
 		return sb.toString();
 	}
-	
-	public static List<ETFolderModel> readUploadedZip(InputStream inputStream, HttpServletRequest request) {
+	public static List<ETModel> extractZipStream(InputStream inputStream) {
 		try {
 	        BufferedInputStream bis = new BufferedInputStream(inputStream);
-			final ZipInputStream zipInputStream = new ZipInputStream(bis);
-			List<ETFolderModel> directory = new ArrayList<>();
+			ZipInputStream zipInputStream = new ZipInputStream(bis);
+			List<ETModel> directory = new ArrayList<>();
 			ZipEntry entry;
 			String prevPath = null;
 			try {
@@ -172,7 +178,7 @@ public class FileIOManager {
 							}
 						}
 						path = pathBuilder.toString();
-						ETFolderModel me = new ETFolderModel();
+						ETModel me = new ETModel();
 						boolean isCompleted = false;
 						if(prevPath != null && prevPath.length() >0){
 							  Pattern pattern = Pattern.compile("^(" +path +")");
@@ -181,8 +187,8 @@ public class FileIOManager {
 						    	  continue;
 						      }
 						}
-						for(ETFolderModel completedEntry: directory){
-							if(name.equals(completedEntry.getName()) && path.equals(completedEntry.getPath())){
+						for(ETModel completedEntry: directory){
+							if(name.equals(completedEntry.get("name")) && path.equals(completedEntry.get("path"))){
 								isCompleted = true;
 								break;
 							}
@@ -191,29 +197,31 @@ public class FileIOManager {
 							continue;
 						}
 						if(i > 0){
-							for(ETFolderModel directoryEntry: directory){
-								if(directoryEntry.getPath().equals(parentPath)){
-									me.setParentFolder(directoryEntry);
+							for(ETModel directoryEntry: directory){
+								if(directoryEntry.get("path").equals(parentPath)){
+									me.set("parentFolder", directoryEntry);
 									break;
 								}
 							}
 						}else{
-							ETFolderModel parentFolder = new ETFolderModel();
-							parentFolder.setUID("#");
-							me.setParentFolder(parentFolder);
+							ETModel parentFolder = new ETModel();
+							parentFolder.set("uid", "#");
+							me.set("parentFolder", parentFolder);
 						}
-						boolean isFolder = true;
+						String isFolder = "Y";
 						if(i == pathSplitter.length -1){
-							isFolder = entry.isDirectory();
+							isFolder = (entry.isDirectory()? "Y" : "N" );
 						}
-						me.setPath(path);
-						me.setUID(uID.toString());
-						me.setName(name);
-						me.setDirectory(isFolder);
-						if(!isFolder){
-							//StringWriter fileWriter = new StringWriter();
-							//IOUtils.copy(zipInputStream, fileWriter, "UTF-8");
-							me.setFileContent(zipInputStream);
+						me.set("path",path);
+						me.set("uid", uID.toString());
+						me.set("name", name);
+						me.set("isFolder", isFolder);
+						if("N".equals(isFolder)){
+							StringBuilder stringBuilder = new StringBuilder();
+							for (int c = zipInputStream.read(); c != -1; c = zipInputStream.read()) {
+								stringBuilder.append((char)c);
+							}
+							me.set("fileContent", stringBuilder.toString());
 						}
 						directory.add(me);
 					}
@@ -221,10 +229,39 @@ public class FileIOManager {
 				}
 				return directory;
 			} finally {
-				//zipInputStream.close();
+				if(inputStream != null) inputStream.close();
+				if(bis != null) bis.close();
+				if(zipInputStream != null) zipInputStream.close();
 			}
 		} catch ( IOException e) {
 			 throw new RuntimeException("FileIOManager throws FileUploadException:" + e.getMessage());
+		}
+	}
+	public static String writeStreamToDisk(String fileName, InputStream fileStream){
+		String fileStoragePath = new DBPropsManager().getFileStoragePath();
+		String filePath = fileStoragePath;
+		String ext = "txt";
+		try {
+			if(fileName.contains(".")){
+				ext = fileName.substring(fileName.indexOf("."));
+			}
+			String randomFileName = RandomStringUtils.randomAlphanumeric(8);
+			filePath += randomFileName + ext;
+			File file= new File(filePath);
+			FileUtils.copyInputStreamToFile(fileStream, file);
+			return file.getAbsolutePath();
+		} catch (FileNotFoundException e) {
+			throw new ETException("InvalidFileStoragePath", "FileIoManager throws FileNotFoundException while writeStreamToDisk", 
+					"No path with " + fileStoragePath + " found on this system, please update db.properties or contact administrator");
+		} catch (IOException e) {
+			throw new ETException("IOException", "FileIoManager throws IOException while writeStreamToDisk", 
+					e.getMessage());
+		}finally{
+			if (fileStream != null) {
+				try {
+					fileStream.close();
+				} catch (IOException e) {}
+			}
 		}
 	}
 }

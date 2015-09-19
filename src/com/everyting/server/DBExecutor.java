@@ -186,11 +186,9 @@ public class DBExecutor{
 		} finally{
 			DBConnectionManager.closeDbResouces(connection, preparedStatement, resultSet);
 		}
-		
 	}
 	@SuppressWarnings("unchecked")
-	public static List<ETModel> batchExecuteUpdate(String action, ETModel requestData){
-		List<ETModel> responseData = new ArrayList<>();
+	public static int[] batchExecuteUpdate(String action, ETModel requestData){
 		Connection connection = getDbConnection();
 		PreparedStatement preparedStatement = null;
 		ResultSet resultSet = null;
@@ -214,26 +212,9 @@ public class DBExecutor{
 					preparedStatement.addBatch();
 				}
 			}
-			int[] affectedRows = preparedStatement.executeBatch();
-			resultSet =  preparedStatement.getGeneratedKeys();
-			if(affectedRows != null){
-				for(int i =0; i < affectedRows.length; i++){
-					ETModel processedRow = new ETModel();
-					processedRow.set("affectedRowsCount",affectedRows[i] );	
-					responseData.add(processedRow);
-				}
-			}
-			int count = 0;
-			while(resultSet.next()){
-			    int currentId = resultSet.getInt(1);
-			    if(responseData.size() >= 0){
-			    	ETModel etModel = responseData.get(count);
-			    	etModel.set(aIPKColumn, currentId);
-			    	responseData.set(count, etModel);
-			    }
-			    count++;
-			}
-				connection.commit();
+			int[] affectedRows =  preparedStatement.executeBatch();
+			connection.commit();
+			return affectedRows;
 		} catch (SQLException e) {
 			try {
 				/*Transaction RollBack here!*/
@@ -245,11 +226,7 @@ public class DBExecutor{
 		} finally{
 			DBConnectionManager.closeDbResouces(connection, preparedStatement, resultSet);
 		}
-		return responseData;
 	}
-	
-	
-
 	private static PreparedStatement statementHandler(PreparedStatement preparedStatement, Object[] preparedPamas) throws SQLException{
 		if(preparedPamas != null){
 			for(int i=0; i < preparedPamas.length; i++){
