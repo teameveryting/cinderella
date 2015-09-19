@@ -111,3 +111,35 @@ import com.everyting.server.vendor.VendorManager;
 		    responseData.set("data", updateList);
 		}
 ');
+
+INSERT INTO ET_INTERPRETERS(NAME, LANG, IS_ACTIVE,ICON, CONTENT) 
+values('ETTemplatesSave', 'Java', 'Y', 'icon-music-tone-alt', 'import java.util.Map;
+import com.everyting.server.ServiceManager;
+import com.everyting.server.model.ETModel;
+import com.everyting.server.DBExecutor;
+import java.io.InputStream;
+import java.util.List;
+import com.everyting.server.model.ETModel;
+import com.everyting.server.util.FileIOManager;
+
+		ETModel formData = (ETModel) requestData.get("formData");
+		ETModel fileMapping = (ETModel) requestData.get("fileMapping");
+		Map filesData = (Map) requestData.get("files");
+		String thumbnailImageFileName = (String) fileMapping.get("thumbNail");
+		int thumbnailFileId = ServiceManager.uploadETFileStream(filesData.get(thumbnailImageFileName));
+		int templateId = DBExecutor.rawExecuteUpdate("INSERT INTO ET_TEMPLATES(TEMPLATE_NAME, THUMBNAIL_ID, THEME, VERSION) 				VALUES(?,?,?,?)",new Object[]{ formData.get("templateName"), 
+					thumbnailFileId,formData.get("theme"),formData.get("version")});
+		String projectZipFileName = (String) fileMapping.get("project");
+		ETModel projectData = filesData.get(projectZipFileName);
+		List<ETModel> extractedProjectModel = FileIOManager.extractZipStream( (InputStream) projectData.get("fileStream"));
+       for(ETModel entry : extractedProjectModel ){
+			entry.set("templateId", templateId);
+            entry.set("fileContent", entry.get("fileContent"));
+			entry.set("parentUid", ((ETModel)entry.get("parentFolder")).get("uid"));
+			entry.remove("parentFolder");
+		}
+		ETModel projectBatch = new ETModel();
+		projectBatch.set("dataSource", "etTemplateStructure");
+		projectBatch.set("valueMapList", extractedProjectModel);
+		DBExecutor.batchExecuteUpdate("insert", projectBatch);
+');
