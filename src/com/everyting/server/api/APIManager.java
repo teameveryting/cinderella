@@ -11,7 +11,7 @@ import com.everyting.server.util.FileIOManager;
 
 public class APIManager {
 	
-	public static ETModel manageQuery(ETModel requestData){
+	public static Object manageQuery(ETModel requestData){
 		ETModel responseData = new ETModel();
 		/*Check for before Interpreters*/
 		String beforeAPICallInterpreter = (String) requestData.get("beforeAPICall");
@@ -23,14 +23,15 @@ public class APIManager {
 			  responseData.set("data", queryResult);
 		}
 		/*Check for after InterPreters*/
-		if(requestData.get("afterAPICall") != null){
+		String afterCallInterpreter = (String) requestData.get("afterAPICall");
+		if(afterCallInterpreter != null && afterCallInterpreter.trim().length() > 0){
 			InterpreterHandler.handleAfterAPICall(requestData, responseData);
 		}
-		return responseData;
+		return responseData.get("data");
 	}
 	
 	/*Insert/Update/Delete Call*/
-	public static ETModel manageExecuteUpdate(String action, ETModel requestData){
+	public static Object manageExecuteUpdate(String action, ETModel requestData){
 		ETModel responseData = new ETModel();
 		/*Check for before Interpreters*/
 		String beforeAPICallInterpreter = (String) requestData.get("beforeAPICall");
@@ -42,26 +43,27 @@ public class APIManager {
 			  responseData.set("data", updateResult);
 		 }
 		/*Check for after InterPreters*/
-		if(requestData.get("afterAPICall") != null){
-			
+		String afterCallInterpreter = (String) requestData.get("afterAPICall");
+		if(afterCallInterpreter != null && afterCallInterpreter.trim().length() > 0){
+			InterpreterHandler.handleAfterAPICall(requestData, responseData);
 		}
-		return responseData;
+		return responseData.get("data");
 	}
 	/*Batch Insert/Update/Delete Call*/
-	public static ETModel manageBatchExecuteUpdate(String action, ETModel requestData){
+	public static Object manageBatchExecuteUpdate(String action, ETModel requestData){
 		ETModel responseData = new ETModel();
 		/*Check for before Interpreters*/
 		if(requestData.get("beforeAPICall") != null){
 		}
 		if(requestData.get("skipAPI") == null || !(boolean)requestData.get("skipAPI")){
-			  DBExecutor.batchExecuteUpdate(action, requestData);
-			  responseData.set("data", new ETModel());
+			responseData.set("data",  DBExecutor.batchExecuteUpdate(action, requestData));
 		 }
 		/*Check for after InterPreters*/
-		if(requestData.get("afterAPICall") != null){
-			
+		String afterCallInterpreter = (String) requestData.get("afterAPICall");
+		if(afterCallInterpreter != null && afterCallInterpreter.trim().length() > 0){
+			InterpreterHandler.handleAfterAPICall(requestData, responseData);
 		}
-		return responseData;
+		return responseData.get("data");
 	}
 	public static ETModel manageFileFormDataUpload(HttpServletRequest request){
 		ETModel responseData = new ETModel();

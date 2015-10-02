@@ -148,7 +148,10 @@
                 <a ui-sref="app.admin" ng-style="($state.current.name).indexOf('app.admin') > -1 ? 
                 {'color':'{{theme.background}}', 'background-color':'#f8f8f8'}:{}"><em class="icon-badge"></em></a>
             </li>
-            
+             <li  class="favicon-anim">
+                <a ui-sref="app.etApps" ng-style="($state.current.name).indexOf('app.etApps') > -1 ? 
+                {'color':'{{theme.background}}', 'background-color':'#f8f8f8'}:{}"><em class="icon-basket-loaded"></em></a>
+            </li>
             <li ng-repeat = "etPage in etPages" class="favicon-anim">
                 <a ui-sref="{{etPage.state}}"
 	                 ng-style="(($state.current.name).indexOf('{{etPage.state}}')) > -1 ? 
@@ -161,5 +164,6 @@
 </div> 
     	
 <div  class="page-wrapper">
-	 <div ui-view class="ui-view-wrapper"></div>
+	 <div ui-view class="ui-view-wrapper">
+	 </div>
 </div>

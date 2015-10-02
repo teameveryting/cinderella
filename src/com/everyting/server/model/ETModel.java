@@ -16,31 +16,25 @@ public class ETModel implements Serializable{
 	public Object set(String key, Object value){
 		return model.put(key, value);
 	}
-	
 	public void remove(String key){
 		if(model.containsKey(key)){
 			model.remove(key);
 		}
 	}
-	
 	public Set<String> getKeySet(){
 		return model.keySet();
 	}
-	
 	public Iterator<String> getKeyIterator(){
 		Set<String> modelKeySet =  model.keySet();
 		return modelKeySet.iterator();
 	}
-	
 	@Deprecated
 	public Map<String, Object> getRawMap(){
 		return model;
 	}
-	
 	public int getSize() {
 		return model.size();
 	}
-	
 	@Override
 	public String toString() {
 		return model.toString();

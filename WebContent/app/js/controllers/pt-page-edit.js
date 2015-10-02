@@ -22,10 +22,11 @@ app.controller("ptPagesEditCntrl", function($scope, $stateParams,$state, platfor
 		"\t\t/*Your controller here!*/\n"+
 		"\t\t$scope.test = \"Page Workig....\";\n\n"+
 		"});";
-	$scope.pageDetails.lazyLoad = "/*{\n"+
+	$scope.pageDetails.lazyLoad = "";
+	/*{\n"+
 	"\t\"js\" :[\"/vendor/somefolder/example1.js\", \"/vendor/somefolder/example2.js\"],\n"+
 	"\t\"css\":[\"/vendor/somefolder/example1.css\", \"/vendor/somefolder/example2.css\"],\n"+
-	"\t\"vendorBundles\":[\"code_mirror\", \"example_bundle\"]\n }*/";
+	"\t\"vendorBundles\":[\"code_mirror\", \"example_bundle\"]\n }*/
 
 	if(pageName){
 		var options = {
@@ -100,6 +101,7 @@ app.controller("ptPagesEditCntrl", function($scope, $stateParams,$state, platfor
 		};
 		platformUtils.save("etPages", $scope.pageDetails, options).then(function(response){
 			if(response.data && response.data.length > 0){
+				 platformUtils.pop("success", "Success", "Changes saved successfuly");
 				$scope.isEtPagesBusy = false;
 				$state.go('app.admin.platfrom-pages.pt-page-edit', {pn:response.data[0].pageName});
 			}

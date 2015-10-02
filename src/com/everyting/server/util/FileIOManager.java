@@ -3,6 +3,7 @@ package com.everyting.server.util;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +28,7 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.RandomStringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,9 +42,10 @@ public class FileIOManager {
     private static final int MAX_FILE_SIZE      = 1024 * 1024 * 120; // 120MB
     private static final int MAX_REQUEST_SIZE   = 1024 * 1024 * 150; // 150MB
 
-    public static void writeFileStreamToResponse(ETModel blobData, HttpServletResponse response, boolean isInline){
-	try {	
-			if(blobData != null){
+    public static void writeBlobAsStream(ETModel blobData, HttpServletResponse response, boolean isInline){
+    	if(blobData == null) return;
+    	OutputStream outputStream = null;
+    	try {	
 				String fileName = (String) blobData.get("fileName");
 				String contentType = (String) blobData.get("contentType");
 				contentType = (contentType == null || !(contentType.length() >0 )) ? "application/octet-stream": contentType;
@@ -52,16 +55,78 @@ public class FileIOManager {
 				String downloadType = "attachment";
 				if(isInline) downloadType = "inline";
 				response.setHeader("Content-Disposition", downloadType + "; filename=\"" + fileName + "\"");
-		         OutputStream outputStream = response.getOutputStream();
-		         outputStream.write(fileStream);
-		         outputStream.flush();
-		         outputStream.close();
+				outputStream = response.getOutputStream();
+		        outputStream.write(fileStream);
 		         return;
+			}catch (IOException e) {
+				throw new ETException("IOException", "FileIOManager throws IOException while writeFileStreamToResponse", e.getMessage());
+			}finally{
+				if(outputStream != null){
+					 try {
+						outputStream.flush();
+						outputStream.close();
+					} catch (IOException e) {}
+				}
 			}
-		}catch (IOException e) {
-			throw new ETException("IOException", "FileIOManager throws IOException while writeFileStreamToResponse", e.getMessage());
+    }
+    public static void writeETFileAsStream(ETModel fileData, HttpServletResponse response, boolean isInline){
+    	if(fileData == null) return;
+    	OutputStream outputStream = null;
+    	FileInputStream fileInputStream = null;
+    	try{
+    		String url = (String) fileData.get("filePath");
+    		if(url == null || !(url.length() >0)) 
+    			throw new ETException("InvalidUrl", "FileIOManager throws InvalidUrl:", "Missing URL to download file!");
+    		String fileName = (String) fileData.get("fileName");
+			String contentType = (String) fileData.get("contentType");
+				   contentType = (contentType == null || !(contentType.length() >0 )) ? "application/octet-stream": contentType;
+    		response.setContentType(contentType);
+			String downloadType = "attachment";
+			if(isInline) downloadType = "inline";
+			response.setHeader("Content-Disposition", downloadType + "; filename=\"" + fileName + "\"");
+			outputStream = response.getOutputStream();
+			fileInputStream = new FileInputStream(url);
+			IOUtils.copy(fileInputStream, outputStream);
+			return;
+    	}catch (IOException e) {
+			throw new ETException("IOException", "FileIOManager throws IOException while writeETFileAsStream", e.getMessage());
+		}finally{
+				try {
+					if(fileInputStream != null) fileInputStream.close();
+						if(outputStream != null){
+								outputStream.flush();
+								outputStream.close();
+							}
+				}catch (IOException e) {}
 		}
     }
+	public static String writeStreamToDisk(String fileName, InputStream fileStream){
+		String fileStoragePath = new DBPropsManager().getFileStoragePath();
+		String filePath = fileStoragePath;
+		String ext = "txt";
+		try {
+			if(fileName.contains(".")){
+				ext = fileName.substring(fileName.indexOf("."));
+			}
+			String randomFileName = RandomStringUtils.randomAlphanumeric(8);
+			filePath += randomFileName + ext;
+			File file= new File(filePath);
+			FileUtils.copyInputStreamToFile(fileStream, file);
+			return file.getAbsolutePath();
+		} catch (FileNotFoundException e) {
+			throw new ETException("InvalidFileStoragePath", "FileIoManager throws FileNotFoundException while writeStreamToDisk", 
+					"No path with " + fileStoragePath + " found on this system, please update db.properties or contact administrator");
+		} catch (IOException e) {
+			throw new ETException("IOException", "FileIoManager throws IOException while writeStreamToDisk", 
+					e.getMessage());
+		}finally{
+			if (fileStream != null) {
+				try {
+					fileStream.close();
+				} catch (IOException e) {}
+			}
+		}
+	}
     /*Response:List (fileName, fileStream)*/
     public static List<ETModel> readUploadedFiles(HttpServletRequest request){
     	List<ETModel> fileStreamList = new ArrayList<>();
@@ -235,33 +300,6 @@ public class FileIOManager {
 			}
 		} catch ( IOException e) {
 			 throw new RuntimeException("FileIOManager throws FileUploadException:" + e.getMessage());
-		}
-	}
-	public static String writeStreamToDisk(String fileName, InputStream fileStream){
-		String fileStoragePath = new DBPropsManager().getFileStoragePath();
-		String filePath = fileStoragePath;
-		String ext = "txt";
-		try {
-			if(fileName.contains(".")){
-				ext = fileName.substring(fileName.indexOf("."));
-			}
-			String randomFileName = RandomStringUtils.randomAlphanumeric(8);
-			filePath += randomFileName + ext;
-			File file= new File(filePath);
-			FileUtils.copyInputStreamToFile(fileStream, file);
-			return file.getAbsolutePath();
-		} catch (FileNotFoundException e) {
-			throw new ETException("InvalidFileStoragePath", "FileIoManager throws FileNotFoundException while writeStreamToDisk", 
-					"No path with " + fileStoragePath + " found on this system, please update db.properties or contact administrator");
-		} catch (IOException e) {
-			throw new ETException("IOException", "FileIoManager throws IOException while writeStreamToDisk", 
-					e.getMessage());
-		}finally{
-			if (fileStream != null) {
-				try {
-					fileStream.close();
-				} catch (IOException e) {}
-			}
 		}
 	}
 }

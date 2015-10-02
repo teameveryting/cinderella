@@ -65,19 +65,10 @@ app.controller("interpreterEditCntrl", function($scope, $stateParams,$state, pla
 		$scope.isEtInterpreterBusy = true;
 		platformUtils.save("etInterpreters", $scope.inptrDetails, {returnRows:true}).then(function(response){
 			if(response.data && response.data.length > 0){
+				platformUtils.pop("success", "Success", "Changes saved successfuly");
 				$scope.isEtInterpreterBusy = false;
 				$state.go('app.admin.interpreters.inptr-edit', {inptr:response.data[0].name});
 			}
 		});
 	};
-	
-	/*  
-	 * var myCodeMirror = CodeMirror(document.body);
-	 * var javaEditor = CodeMirror.fromTextArea(document.getElementById("java-code"), {
-		    lineNumbers: true,
-		    matchBrackets: true,
-		    mode: "text/x-java"
-		  });
-		  var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault;
-		  CodeMirror.keyMap.default[(mac ? "Cmd" : "Ctrl") + "-Space"] = "autocomplete";*/
 });

@@ -124,7 +124,7 @@ public class DBExecutor{
 			 if(currentId > -1 && returnRows ){
 				List<ETModel> queryList =  new ArrayList<>();
 				ETModel valueMap = (ETModel) requestData.get("valueMap");
-				valueMap.set(pkColumn, currentId);
+				valueMap.set(DataHandler.toCamelCase(pkColumn), currentId);
 				queryList.add(valueMap);
 				return queryList;
 			 }

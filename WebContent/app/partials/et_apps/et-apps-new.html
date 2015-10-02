@@ -1,0 +1,64 @@
+<div class="col-lg-12" style="padding: 0px;  margin-bottom: 20px;">
+	<div class="sup-header" style="float: left; width: 100%; height: 68px;">
+		<div style="margin-left: 50px;  float: left;">
+			<blockquote class="text-muted favicon-anim">
+				<h3 style="margin-top: 3px; margin-bottom: 2px;">
+					<em class="icon-basket-loaded"></em> Everyting Apps
+				</h3>
+				<footer>Manage Apps</footer>
+			</blockquote>
+		</div>
+	</div>
+</div>
+<div class="row">
+		<div class="col-lg-12 col-md-12 col-sm-12" style="padding-left: 60px;padding-right: 40px;">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div class="row">
+								<form role="form">
+									<div class="form-group col-lg-7 col-md-7 col-sm-7 has-error">
+										<label>App Title</label> 
+										<input class="form-control " type="text" name = "app_title" placeholder="Unique Name" ng-model="etApp.title" required>
+										<p ng-show="form.app_title.$dirty && form.app_title.$invalid"  class="help-block">Title is required!</p>
+									</div>
+									
+									<div class="form-group col-lg-7 col-md-7 col-sm-7 has-error">
+										<label>Theme</label> 
+										<input class="form-control " type="text" name = "app_theme" placeholder="Theme (Ionic, Angle, Bootstrap...)" ng-model="etApp.theme" required>
+										<p ng-show="form.app_theme.$dirty && form.app_theme.$invalid"  class="help-block">Theme is required!</p>
+									</div>
+									
+									<div class="form-group col-lg-7 col-md-7 col-sm-7 has-error">
+										 <flex-slider slider-id="carousel" flex-slide="template in templates track by $index" animation="slide" animation-loop="false" item-width="210" item-margin="10" slideshow="false">
+        										<li>
+         											<img ng-style = "((template.id === etApp.templateId) ? {'border': '1px solid', 'cursor':'pointer'}: {'cursor':'pointer'})" 
+         											 ng-click = "selectTemplate(template)" width="210" height="200" 
+         											ng-src="http://localhost:8080/cinderella/service/files/download?fid={{template.thumbnailId}}&inline=true">
+       											 </li>
+      									</flex-slider>
+									</div>
+									<div class="form-group col-lg-7 col-md-7 col-sm-7">
+										<label>Template</label> 
+										<input class="form-control " type="text"  placeholder="Select above template to fill" ng-model="etApp.template" readonly>
+									</div>
+									<div class="form-group col-lg-7 col-md-7 col-sm-7">
+										<label>Icon</label> 
+										<input class="form-control " type="text"  placeholder="icon-notebook/fa fa-user" ng-model="etApp.icon">
+									</div>
+								</form>
+						</div>
+					</div>
+					<div class="panel-footer">
+						<div style="width:250px; margin: 0px auto;">
+							<button class="btn btn-primary" ng-click="save()">
+								<em class="fa fa-save"></em>&nbsp; Save
+							</button>
+							<button class="btn btn-info" ng-click="reset()">
+								<em class="icon-refresh"></em>&nbsp;Reset
+							</button>
+						</div>
+						<p><i>{{log}}</i></p>
+					</div>
+				</div>
+			</div>
+</div>

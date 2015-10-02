@@ -1,7 +1,7 @@
 'use strict';
 var app = angular.module("app");
-app.factory("platformUtils",  [ 'dialogs','$http','$q','$rootScope','$location','localStorageService','Upload','$timeout',
-                                function(dialogs, $http, $q, $rootScope, $location, localStorageService, Upload, $timeout){ 
+app.factory("platformUtils",  [ 'dialogs','$http','$q','$rootScope','$location','localStorageService','Upload','$timeout','toaster',
+                                function(dialogs, $http, $q, $rootScope, $location, localStorageService, Upload, $timeout, toaster){ 
 	var platformUtils = {};
 	var update = function(dataSource, requestData,pkColumnName, options){
 			var data = {};
@@ -62,8 +62,24 @@ app.factory("platformUtils",  [ 'dialogs','$http','$q','$rootScope','$location',
 	platformUtils.alert = function(type, header, message){
 		if(type === 'error'){
 			dialogs.error( header,message,{});
-		}if(type === 'info'){
+		}else if(type === 'confirm'){
 			dialogs.confirm( header,message,{});
+			dialogs.result.then(function(btn){
+		          alert("yes");
+		        },function(btn){
+		        	alert("no");
+		        });
+		}else if(type === 'info'){
+			dialogs.notify( header,message, {});
+		}
+	};
+	platformUtils.pop = function(type, header, message){
+		if(type === 'success'){
+			toaster.pop('success', header, message);
+		}else if(type === 'error'){
+			toaster.pop('error', header, message);
+		}else if(type === 'info'){
+			 toaster.pop('info', header, message);
 		}
 	};
 	platformUtils.getRandomColor = function(){
@@ -159,7 +175,7 @@ app.factory("platformUtils",  [ 'dialogs','$http','$q','$rootScope','$location',
 					var responseData = response.data;
 					deffered.resolve(responseData);
 				}else if(response.data.status === "error"){
-					platformUtils.alert("error", response.data.data.type, response.data.data.message );
+					platformUtils.alert("error", response.data.type, response.data.message );
 				}
 			});
 		return deffered.promise;
@@ -182,7 +198,7 @@ app.factory("platformUtils",  [ 'dialogs','$http','$q','$rootScope','$location',
 				if(response.data.status === "success"){
 					deffered.resolve(response.data);
 				}else if(response.data.status === "error"){
-					platformUtils.alert("error", response.data.data.type, response.data.data.message );
+					platformUtils.alert("error", response.data.type, response.data.message );
 					deffered.resolve({});
 				};
 			});
@@ -191,7 +207,7 @@ app.factory("platformUtils",  [ 'dialogs','$http','$q','$rootScope','$location',
 				if(response.data.status === "success"){
 					deffered.resolve(response.data);
 				}else if(response.data.status === "error"){
-					platformUtils.alert("error", response.data.data.type, response.data.data.message );
+					platformUtils.alert("error", response.data.type, response.data.message );
 					deffered.resolve({});
 				};
 			});
@@ -238,6 +254,75 @@ app.factory("platformUtils",  [ 'dialogs','$http','$q','$rootScope','$location',
 		            },
 		            file: files
 		        });
+ 	};
+ 	platformUtils.registerOnDataStack = function(group, uniqueIdentifier, object){
+ 		uniqueIdentifier = uniqueIdentifier + "";
+ 		if(!$rootScope.dataStack) {
+ 			$rootScope.dataStack = [];
+ 			$rootScope.dataStack[group] = [];
+ 			$rootScope.dataStack[group][uniqueIdentifier] = angular.copy(object);
+ 		}else{
+ 			if($rootScope.dataStack[group]){
+ 				if(!$rootScope.dataStack[group][uniqueIdentifier]){
+ 					$rootScope.dataStack[group][uniqueIdentifier] = angular.copy(object);
+ 				}
+ 			}else{
+ 				$rootScope.dataStack[group] = [];
+ 				$rootScope.dataStack[group][uniqueIdentifier] = angular.copy(object);
+ 			}
+ 		}
+ 	};
+ 	platformUtils.getUnsavedDataStack = function($scope, group){
+ 		var unsavedDataStcak = [];
+ 		if($scope && group && $rootScope.dataStack){
+ 			var dataGroupArr = $rootScope.dataStack[group];
+ 			if(dataGroupArr && dataGroupArr.length > 0){
+ 				for(var modelIdentifier in dataGroupArr){
+ 					var scopeCurrentModel = $scope[modelIdentifier];
+ 					var originalModel = dataGroupArr[modelIdentifier];
+ 					if(scopeCurrentModel && !angular.equals(scopeCurrentModel,originalModel)){
+ 						unsavedDataStcak.push(scopeCurrentModel);
+ 					}
+ 				}
+ 			}
+ 		}
+ 		return unsavedDataStcak;
+ 	};
+ 	platformUtils.isModelChanges = function(groupIdentifier, modelIdentifier, currentObject){
+ 		if(groupIdentifier && modelIdentifier && $rootScope.dataStack){
+ 			var groupData = $rootScope.dataStack[groupIdentifier];
+ 			if(groupData){
+ 				var dataStackObject = $rootScope.dataStack[groupIdentifier][modelIdentifier];
+ 				if(dataStackObject && currentObject){
+ 		 			var changed = (angular.equals(dataStackObject.content, currentObject.content));
+ 		 			return !changed;
+ 				}
+ 			}
+ 		}
+ 		return false;
+ 	};
+ 	platformUtils.updateModelChanges = function(groupIdentifier, modelIdentifier, currentObject){
+ 		if(groupIdentifier && modelIdentifier && $rootScope.dataStack){
+ 			var groupData = $rootScope.dataStack[groupIdentifier];
+ 			if(groupData){
+ 				var dataStackObject = $rootScope.dataStack[groupIdentifier][modelIdentifier];
+ 				if(dataStackObject && currentObject){
+ 					 $rootScope.dataStack[groupIdentifier][modelIdentifier] = currentObject;
+ 				}
+ 			}
+ 		}
+ 		return false;
+ 	};
+ 	platformUtils.deleteDataStackGroup  = function(group){
+ 		if(group && $rootScope.dataStack && $rootScope.dataStack[group]){
+ 			delete  $rootScope.dataStack[group];
+ 		}
+ 	};
+ 	platformUtils.deleteDataStackModel  = function(groupIdentifier, modelIdentifier){
+ 		if(groupIdentifier && modelIdentifier && $rootScope.dataStack && 
+ 				$rootScope.dataStack[groupIdentifier] &&  $rootScope.dataStack[groupIdentifier][modelIdentifier] ){
+ 			delete  $rootScope.dataStack[groupIdentifier][modelIdentifier];
+ 		}
  	};
 	platformUtils.processOnserver = function(){
 			

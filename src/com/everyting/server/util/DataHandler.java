@@ -29,47 +29,60 @@ public class DataHandler {
 					, e.getMessage());
 		}
 	}
-	public static JSONObject toJSONResponse(ETModel responseModel){
+	public static JSONObject toJSONResponse(String errorType, String logInfo, String message){
 		JSONObject response = new JSONObject();
-		try {
-			response.put("status", "success");
-			response.put("data", DataHandler.toJSONObject(responseModel));
-		} catch (JSONException e) {
-			throw new ETException("JSONException", "DataHandler throws JSONException while toJSONResponse" 
-					, e.getMessage());
-		}
-		return response;
-	}
-	public static JSONObject toJSONResponse(List<ETModel> etModelList){
-		JSONObject response = new JSONObject();
-		JSONArray jsonArray = new JSONArray();
-		try {
-			for(int i=0; i < etModelList.size(); i++){
-				ETModel etModel = etModelList.get(i);
-				jsonArray.put(DataHandler.toJSONObject(etModel));
-			}
-			response.put("status", "success");
-			response.put("data", jsonArray);
-		} catch (JSONException e) {
-			throw new ETException("JSONException", "DataHandler throws JSONException while toJSONResponse" 
-					, e.getMessage());
-		}
-		return response;
-	}
-	public static JSONObject toJSONResponse(String errorCode, String title, String message){
-		JSONObject response = new JSONObject();
-		JSONObject data = new JSONObject();
 		try {
 			response.put("status", "error");
-			data.put("type", errorCode);
-			data.put("message", message);
-			response.put("data", data);
-		} catch (JSONException e) {
+			response.put("type", errorType);
+			response.put("message", message);
+		}catch (JSONException e) {
 			throw new ETException("JSONException", "DataHandler throws JSONException while getResponseException" 
 					, e.getMessage());
 		}
 		return response;
-	}	
+	}
+	@SuppressWarnings("unchecked")
+	public static Object toJSONObject(Object object){
+		if(object == null) return null;
+		Object processedObject = null;
+		try {
+			if(object instanceof ETModel){
+				JSONObject jsonObject = new JSONObject();
+				ETModel	etModel = (ETModel) object;
+				Iterator<String> iterator = etModel.getKeyIterator();
+				while (iterator.hasNext()) {
+					String key = iterator.next();
+					Object value = etModel.get(key);
+					jsonObject.put(key, toJSONObject(value));
+				}
+				processedObject = jsonObject;
+			}else if(object instanceof List<?>){
+				JSONArray jsonArray = new JSONArray();
+				List<Object> listModel = (List<Object>) object;
+				for(Object entry: listModel){
+					jsonArray.put(toJSONObject(entry));
+				}
+				processedObject = jsonArray;
+			}else if(object instanceof Object[]){
+				 Object[] objectsArray = (Object[]) object;
+				JSONArray jsonArray = new JSONArray();
+				 if(objectsArray != null){
+					for(int i=0; i< objectsArray.length; i++){
+						jsonArray.put(toJSONObject(objectsArray[i]));
+					  }
+				 }
+				 processedObject = jsonArray;
+			}else if(object instanceof byte[]){
+				processedObject =  new String((byte[]) object);
+	    	}else{
+	    		processedObject = object;
+	    	}
+		} catch (JSONException e) {
+			throw new ETException("JSONException", "DataHandler throws JSONException while toJSONObject" 
+					, e.getMessage());
+		}
+		return processedObject;
+	}
 	@SuppressWarnings("unchecked")
 	public static ETModel toETModel(JSONObject jsonObject){
 		ETModel etModel = new ETModel();
@@ -110,46 +123,6 @@ public class DataHandler {
 					, e.getMessage());
 		}
 		return objectList;
-	}
-	@SuppressWarnings("unchecked")
-	public static JSONObject toJSONObject(ETModel etModel){
-		JSONObject jsonObject = new JSONObject();
-		try {
-			Iterator<String> iterator = etModel.getKeyIterator();
-			while (iterator.hasNext()) {
-				String key = iterator.next();
-				Object value = etModel.get(key);
-				if(value instanceof ETModel){
-					value = (JSONObject) toJSONObject((ETModel)value);
-				}
-				if(value instanceof List<?>){
-					JSONArray jsonArray = new JSONArray();
-					List<ETModel> listModel = (List<ETModel>) value;
-					for(ETModel entry: listModel){
-						jsonArray.put(toJSONObject(entry));
-					}
-					value = jsonArray;
-				}
-				if(value instanceof Object[]){
-					 Object[] objectsArray = (Object[]) value;
-					JSONArray jsonArray = new JSONArray();
-					 if(objectsArray != null){
-						for(int i=0; i< objectsArray.length; i++){
-							jsonArray.put(objectsArray[i]);
-						  }
-					 }
-					 value = jsonArray;
-				}
-				if(value instanceof byte[]){
-					value = new String((byte[]) value);
-		    	  }
-				jsonObject.put(key, value);
-			}
-		} catch (JSONException e) {
-			throw new ETException("ET-JSON-005", "DataHandler throws JSONException while toJSONObject" 
-					, e.getMessage());
-		}
-		return jsonObject;
 	}
 	private static String getPostedData(HttpServletRequest request) {
 		StringBuffer stringBuffer = new StringBuffer();

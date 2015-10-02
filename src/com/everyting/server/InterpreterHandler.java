@@ -10,7 +10,7 @@ import com.everyting.server.model.ETModel;
 
 public class InterpreterHandler {
 	
-	public static void handleBeforeAPICall(String beforeInterpreter, ETModel requestData, ETModel responseData){
+	public static void handleBeforeAPICall(String beforeInterpreter, ETModel requestData, Object responseData){
 		List<ETModel> queryResponse = DBExecutor.rawExecuteQuery("SELECT * FROM ET_INTERPRETERS WHERE NAME =  ?", new Object[]{beforeInterpreter});
 		if(queryResponse != null && queryResponse.size() > 0){
 			ETModel interpreterInfo = queryResponse.get(0);
@@ -32,7 +32,7 @@ public class InterpreterHandler {
 		}else throw new ETException("InvalidInterpreter", "InterpreterHandler throws Invalid Interpreter exception while handleBeforeAPICall", 
 									beforeInterpreter + " no such interpreter exists");
 	}
-	public static void handleAfterAPICall(ETModel requestData, ETModel responseData){
+	public static void handleAfterAPICall(ETModel requestData, Object responseData){
 		String afterInterpreter = (String) requestData.get("afterAPICall");
 		List<ETModel> queryResponse = DBExecutor.rawExecuteQuery("SELECT * FROM ET_INTERPRETERS WHERE NAME =  ?", new Object[]{afterInterpreter});
 		if(queryResponse != null && queryResponse.size() > 0){
@@ -45,6 +45,7 @@ public class InterpreterHandler {
 			}
 			Interpreter interpreter = new Interpreter();
 			try {
+				interpreter.set("requestData", requestData);
 				interpreter.set("responseData", responseData);
 				interpreter.eval(content);
 			} catch (EvalError e) {

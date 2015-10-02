@@ -34,7 +34,7 @@ public class RequestResponseRouter extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ResponseWirter responseWirter = ResponseWirter.getInstance(response);
 		String requestURI = request.getRequestURI();
-		ETModel responseData = new ETModel();
+		Object responseData = new ETModel();
 		try{
 			if (requestURI.contains("/api/")) {
 				String opeartion = getAPIOperation(requestURI);

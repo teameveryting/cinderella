@@ -2,7 +2,6 @@ package com.everyting.server;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -10,7 +9,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.everyting.server.exception.ETException;
-import com.everyting.server.model.ETModel;
 import com.everyting.server.util.DataHandler;
 
 public class ResponseWirter {
@@ -36,27 +34,19 @@ public class ResponseWirter {
 	public void write(String data){
 		printWriter.write(data);
 	}
-	@SuppressWarnings("unchecked")
-	public void write(ETModel responseData ){
-		Object object = responseData.get("data");
-		JSONObject jsonData = new JSONObject();
+	public void write(Object responseData ){
+		JSONObject response = new JSONObject();
 		try {
-			JSONObject objectIntrl = null;
-			jsonData.put("status", "success");
-			jsonData.put("data", objectIntrl);
+			response.put("status", "success");
+			response.put("data", DataHandler.toJSONObject(responseData));
 		} catch (JSONException e) {
-			throw new ETException("JSONException", "ResponseWriter throws JSONException while write" 
+			throw new ETException("JSONException", "DataHandler throws JSONException while toJSONResponse" 
 					, e.getMessage());
 		}
-		if(object instanceof ETModel){
-			 jsonData = DataHandler.toJSONResponse((ETModel)responseData.get("data"));
-		}else if(object instanceof List<?>){
-			 jsonData = DataHandler.toJSONResponse((List<ETModel>)responseData.get("data"));
-		}
-		printWriter.write(jsonData.toString());
+		printWriter.write(response.toString());
 	}
-	public void writeError(String type, String logInfo, String message){
-		JSONObject jsonData = DataHandler.toJSONResponse(type, logInfo,  message);
+	public void writeError(String errorType, String logInfo, String message){
+		JSONObject jsonData = DataHandler.toJSONResponse(errorType, logInfo,  message);
 		printWriter.write(jsonData.toString());
 	}
 	public void closeResources(){

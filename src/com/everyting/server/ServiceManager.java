@@ -21,20 +21,34 @@ import com.everyting.server.vendor.VendorManager;
 public class ServiceManager {
 	
 	public static ETModel downloadETFileStream(HttpServletRequest request, HttpServletResponse response){
-		ResponseWirter responseWirter = ResponseWirter.getInstance(response);
+		ResponseWirter responseWirter = null;
 		try{
-		 	ETModel requestData = new ETModel();
-		    requestData.set("fileId", request.getParameter("fid"));
-		    requestData.set("sessionId", request.getParameter("sid"));
-		    
-		    
-		   // FileIOManager.writeFileStreamToResponse(responseData, response);
+		 	String fid = request.getParameter("fid");
+		 	//String sId = request.getParameter("sid");
+		 	if(fid == null || !(fid.length() > 0))
+		 		throw new ETException("InvalidFileId","ServiceManager throws InvalidFileId while downloadETFileStream", "Missing fid in request!");
+			List<ETModel>  queryResponse = DBExecutor.rawExecuteQuery("SELECT * FROM ET_FILES WHERE ID = ?", new Object[]{fid});
+			boolean isInline = false;
+			if(request.getParameter("inline") != null){
+				isInline = Boolean.parseBoolean(request.getParameter("inline"));
+			}
+			if(queryResponse != null && queryResponse.size() > 0){
+		    	ETModel fileData = (ETModel) queryResponse.get(0);
+		    	FileIOManager.writeETFileAsStream(fileData, response, isInline);
+		    }else
+		    	throw new ETException("InvalidFile", "ServiceManager throws InvalidFile while downloadETFileStream", 
+		    			"No File exists to download id:" + fid);
 			}catch(ETException ex){
+				 responseWirter = ResponseWirter.getInstance(response);
 				responseWirter.writeError(ex.getErrorType(), ex.getLogInfo(), ex.getMessage());
+			}catch (RuntimeException ex) {
+				 responseWirter = ResponseWirter.getInstance(response);
+				responseWirter.writeError("Exception", "ServiceManager throws RuntimeException while downloadETFileStream", ex.getMessage());
 			}catch(Exception ex){
-				responseWirter.writeError("Exception", "RequestResponseRouter throws Exception while files/download", ex.getMessage());
+				 responseWirter = ResponseWirter.getInstance(response);
+				responseWirter.writeError("Exception", "ServiceManager throws Exception while downloadETFileStream", ex.getMessage());
 			}finally{
-				responseWirter.closeResources();
+				if(responseWirter != null)responseWirter.closeResources();
 			}
 		return null;
 	}
@@ -58,7 +72,7 @@ public class ServiceManager {
 		  	List<ETModel>  queryResponse = DBExecutor.rawExecuteQuery("SELECT * FROM ET_BLOBS WHERE ID = ?", new Object[]{fid});
 		    if(queryResponse != null && queryResponse.size() > 0){
 		    	ETModel blob = (ETModel) queryResponse.get(0);
-		    	FileIOManager.writeFileStreamToResponse(blob, response, isInline);
+		    	FileIOManager.writeBlobAsStream(blob, response, isInline);
 		    }else{
 		    	throw new ETException("InvalidBlobFile", "ServiceManager throws InvalidBlobFile while downloadBlobStream", 
 		    			"No blob content exists to download as file with id:" + fid);
@@ -68,10 +82,10 @@ public class ServiceManager {
 				responseWirter.writeError(ex.getErrorType(), ex.getLogInfo(), ex.getMessage());
 			}catch (RuntimeException ex) {
 				 responseWirter = ResponseWirter.getInstance(response);
-				responseWirter.writeError("Exception", "RequestResponseRouter throws RuntimeException while files/download", ex.getMessage());
+				responseWirter.writeError("Exception", "ServiceManager throws RuntimeException while downloadBlobStream", ex.getMessage());
 			}catch(Exception ex){
 				 responseWirter = ResponseWirter.getInstance(response);
-				responseWirter.writeError("Exception", "RequestResponseRouter throws Exception while files/download", ex.getMessage());
+				responseWirter.writeError("Exception", "ServiceManager throws Exception while downloadBlobStream", ex.getMessage());
 			}finally{
 				if(responseWirter != null)responseWirter.closeResources();
 			}

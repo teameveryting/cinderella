@@ -1,9 +1,9 @@
 var $stateProviderRef = null;
 var platformUtilsRef = null;
 var vendorBundleRef = null;
-var app = angular.module("app",['ui.bootstrap', 'ui.router', 'oc.lazyLoad', 'chieffancypants.loadingBar', 
-                                'toaster','ngAnimate',   'ngSanitize',  'dialogs.main', 'LocalStorageModule','ngFileUpload' 
-                                ]);
+var app = angular.module("app",[ 'toaster', 'ui.bootstrap', 'ui.router', 'oc.lazyLoad', 'chieffancypants.loadingBar', 
+                                'ngAnimate',   'ngSanitize',  'dialogs.main', 'LocalStorageModule','ngFileUpload' 
+                                 ]);
 app.config(function( $stateProvider,$httpProvider, $locationProvider, $urlRouterProvider, $ocLazyLoadProvider, localStorageServiceProvider, cfpLoadingBarProvider) {
 	 	/*Loading Bar configuration*/
 		cfpLoadingBarProvider.includeBar = true;
@@ -34,7 +34,24 @@ app.run(['$q', '$rootScope', '$http', '$urlRouter','$location','$stateParams', '
 	.state('app.admin.interpreters',getStateDetails('/interpreters',"@app", 'app/partials/admin/interpreters.html','interpreterCntrl','app/js/controllers/interpreters.js'))
 	.state('app.admin.interpreters.inptr-edit', getStateDetails('/edit/:inptr',"@app", 'app/partials/admin/interpreters-edit.html','interpreterEditCntrl', 'app/js/controllers/interpreters-edit.js',["code_mirror"] ))
 	.state('app.admin.templates', getStateDetails('/tempaltes',"@app", 'app/partials/admin/templates.html','templateCntrl', 'app/js/controllers/templates.js' ))
-    .state('app.admin.templates.tmp-edit', getStateDetails('/edit/:tmp',"@app", 'app/partials/admin/templates-edit.html','templateEditCntrl', 'app/js/controllers/template-edit.js' ));
+    .state('app.admin.templates.tmp-edit', getStateDetails('/edit/:tmp',"@app", 'app/partials/admin/templates-edit.html','templateEditCntrl', 'app/js/controllers/template-edit.js' ))
+	.state('app.etApps', getStateDetails(
+									'/etApps',"@app", 
+									'app/partials/et_apps/et-apps.html',
+									'etAppsCntrl', 
+									'app/js/controllers/et_apps/et-apps.js' ))
+	.state('app.etApps.new', getStateDetails(
+									'/new',"@app", 
+									'app/partials/et_apps/et-apps-new.html',
+									'etAppsNewCntrl', 
+									'app/js/controllers/et_apps/et-apps-new.js',
+									["flex_slider"]))
+	.state('app.etApps.etApp-edit', getStateDetails(
+									'/edit/:name/:id',"@app", 
+									'app/partials/et_apps/et-apps-edit.html',
+									'etAppsEditCntrl', 
+									'app/js/controllers/et_apps/et-apps-edit.js',
+									["code_mirror", "js_tree", "angular_unsaved_data"]));
     /*Query the ET_PAGES for dynamic states, templates, controllers, lazy loaded files*/
     getETPages($q).then(function(response){
     	$rootScope.etPages = response.data;
@@ -60,7 +77,18 @@ app.run(['$q', '$rootScope', '$http', '$urlRouter','$location','$stateParams', '
                           "vendor/code-mirror/lint/lint.css","vendor/code-mirror/show-hint/show-hint.css","vendor/code-mirror/fold/foldgutter.css",
                           "vendor/code-mirror/dialog/dialog.css","vendor/code-mirror/search/matchesonscrollbar.css"
                           ]
-     			}
+     			},
+     	flex_slider:{
+     					js:["vendor/flex-slider/jquery.flexslider-min.js", "vendor/flex-slider/angular-flexslider.js", ],
+     					css:["vendor/flex-slider/flexslider.css"]
+     	},
+     	js_tree:{
+     		js:[ "vendor/js-tree/ngJsTree.js"],
+     		css:["vendor/js-tree/style.min.css"]
+     	},
+     	angular_unsaved_data:{
+     		js:["vendor/Angular-unsavedChanges/unsavedChanges.js"]
+     	}
   });
 var getStateDetails = function(url,parent,templateUrl,controller, cntrlUrl, vendorBundles){
 	var obj = {};
